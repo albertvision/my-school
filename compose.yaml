@@ -1,0 +1,7 @@
+services:
+  db:
+    image: "mysql:8.3"
+    env_file:
+      - .env
+    ports:
+      - 13306:3306
