@@ -6,6 +6,7 @@ import bg.nbuteam4.myschool.repository.UserDetailsManager;
 import bg.nbuteam4.myschool.repository.UserRepository;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.context.annotation.Primary;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.ProviderManager;
@@ -60,6 +61,7 @@ public class WebSecurityConfig {
     }
 
     @Bean
+    @Primary
     public UserDetailsManager userDetailsManager(UserRepository userRepository) {
         return new UserDetailsManager(userRepository);
     }
