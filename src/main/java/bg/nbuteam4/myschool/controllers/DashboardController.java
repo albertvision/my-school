@@ -1,15 +1,16 @@
 package bg.nbuteam4.myschool.controllers;
 
-import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Controller;
+import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PostMapping;
 
 @Controller
 public class DashboardController {
     @GetMapping(value = "/")
-    String index() {
-        return "dashboard";
+    String index(Model model) {
+        model.addAttribute("title", "Табло");
+
+        return "dashboard/index";
     }
 
     @GetMapping(value = "/schools")
