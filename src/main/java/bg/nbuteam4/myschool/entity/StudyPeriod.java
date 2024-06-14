@@ -4,22 +4,21 @@ import jakarta.persistence.*;
 import org.yaml.snakeyaml.events.Event;
 
 @Entity
+@Table(name = "study_period",
+        uniqueConstraints = @UniqueConstraint(columnNames = {"school_id", "current_year", "current_semester"}))
 public class StudyPeriod {
 
-    @ManyToOne
-    @JoinColumn(nullable = false, updatable = false)
-    private School school;
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
-
-    @Column(nullable = false)
+    @ManyToOne
+    @JoinColumn(name = "school_id", nullable = false)
+    private School school;
+    @Column(name = "current_year", nullable = false)
     private int currentYear;
-    @Column(nullable = false)
+    @Column(name = "current_semester", nullable = false)
     private int currentSemester;
-
-
     private String name;
 
     private int status;

@@ -3,16 +3,13 @@ package bg.nbuteam4.myschool.entity;
 import jakarta.persistence.*;
 
 @Entity
-public class TypeResult {
-
-
-    @ManyToOne
-    @JoinColumn(nullable = false, updatable = false)
-    private School school;
-
+@Table(name = "type_mark",
+        uniqueConstraints = @UniqueConstraint(columnNames = {"mark_type", "school_id"}))
+public class TypeMark {
     @Id
-    private int resultType;
-    /*TypeResult
+    @Column(name = "mark_type")
+    private int markType; //could be enum as well? Primary key might not work for different schools. Can be changed to only id, school and enum columns, I guess.
+    /*TypeMark
     0   Устно изпитване
     1   Активно участие
     2   Контролна работа
@@ -25,18 +22,20 @@ public class TypeResult {
     9   Изходно ниво
     10 Класна работа
     */
-
+    @ManyToOne
+    @JoinColumn(name = "school_id", nullable = false)
+    private School school;
     private String name;
 
-    public TypeResult() {
+    public TypeMark() {
     }
 
     public School getSchool() {
         return school;
     }
 
-    public int getResultType() {
-        return resultType;
+    public int getMarkType() {
+        return markType;
     }
 
     public String getName() {

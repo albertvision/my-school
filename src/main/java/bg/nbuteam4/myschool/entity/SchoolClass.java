@@ -2,12 +2,12 @@ package bg.nbuteam4.myschool.entity;
 
 import jakarta.persistence.*;
 
-import java.util.IdentityHashMap;
-
+//SchoolClass is "grade" 5a,5b, 12a...
 @Entity
-@Table(name = "teacher",
-        uniqueConstraints = @UniqueConstraint(columnNames = {"id", "school_id"}))
-public class Teacher {
+@Table(name = "structure",
+        uniqueConstraints = @UniqueConstraint(columnNames = {"school_id", "name"}))
+
+public class SchoolClass {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -15,14 +15,11 @@ public class Teacher {
     @ManyToOne
     @JoinColumn(name = "school_id", nullable = false)
     private School school;
-
+    
+    @Column(name = "name", nullable = false)
     private String name;
-    @Column(length = 10, nullable = false)
-    private String egn;
 
-
-    public Teacher() {
-
+    public SchoolClass() {
     }
 
     public Long getId() {
@@ -31,6 +28,7 @@ public class Teacher {
     public School getSchool() {
         return school;
     }
+
     public String getName() {
         return name;
     }
@@ -38,14 +36,4 @@ public class Teacher {
     public void setName(String name) {
         this.name = name;
     }
-
-    public String getEgn() {
-        return egn;
-    }
-
-    public void setEgn(String egn) {
-        this.egn = egn;
-    }
 }
-
-

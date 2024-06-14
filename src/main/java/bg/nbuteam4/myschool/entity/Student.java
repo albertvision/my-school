@@ -3,20 +3,22 @@ package bg.nbuteam4.myschool.entity;
 import jakarta.persistence.*;
 
 @Entity
+@Table(name = "student",
+        uniqueConstraints = @UniqueConstraint(columnNames = {"id", "school_id"}))
 public class Student {
 
-    @ManyToOne
-    @JoinColumn(nullable = false, updatable = false)
-    private School school;
-
+    @Column(length = 10)
     @Id
     private String egn;
+    @ManyToOne
+    @JoinColumn(name = "school_id", nullable = false)
+    private School school;
 
     private String firstName;
     private String middleName;
     private String lastName;
 
-    @Column(nullable = false)
+    @Column(length = 10, nullable = false)
     private String parentEGN;
 
     private String parentName;
