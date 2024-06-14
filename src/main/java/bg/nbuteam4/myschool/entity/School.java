@@ -16,12 +16,8 @@ public class School {
     private String name;
 
 
-    //I spent some time pondering on this and I think there shouldn't be fields CurrentYear and CurrentSemester in School (they are already present in StudyPeriod)
-
-
-    //should this be a OneToOne School-Teacher(director)? Because the director is one of the teachers
-//    @OneToOne
-//    @JoinColumn
+    @OneToOne
+    @JoinColumn
     private Teacher principal;
 
     @OneToMany(mappedBy = "school")
@@ -36,7 +32,7 @@ public class School {
 
 
     @OneToMany(mappedBy = "school")
-    private Set<EduObject> eduObjects; //subjects
+    private Set<EducObj> educObjects; //subjects
 
     @OneToMany(mappedBy = "school")
     private Set<TypeResult> typeResults; //types of grades

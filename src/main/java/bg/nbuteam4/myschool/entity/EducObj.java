@@ -1,25 +1,24 @@
 package bg.nbuteam4.myschool.entity;
 
 import jakarta.persistence.*;
+import org.hibernate.metamodel.model.domain.IdentifiableDomainType;
 
-//Structure is "grade" 5a,5b, 12a...
 @Entity
-public class Structure {
+public class EducObj { //this is subject in school
 
 
     @ManyToOne
     @JoinColumn(nullable = false, updatable = false)
-
     private School school;
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
+    private String subjectName;
 
-    private String name;
 
-    public Structure() {
+    public EducObj() {
     }
 
     public School getSchool() {
@@ -30,11 +29,16 @@ public class Structure {
         return id;
     }
 
-    public String getName() {
-        return name;
+    public String getSubjectName() {
+        return subjectName;
     }
 
-    public void setName(String name) {
-        this.name = name;
+    public void setSubjectName(String subjectName) {
+        this.subjectName = subjectName;
     }
+
+
+
 }
+
+

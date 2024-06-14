@@ -1,25 +1,30 @@
 package bg.nbuteam4.myschool.entity;
 
 import jakarta.persistence.*;
+import org.yaml.snakeyaml.events.Event;
 
-//Structure is "grade" 5a,5b, 12a...
 @Entity
-public class Structure {
-
+public class StudyPeriod {
 
     @ManyToOne
     @JoinColumn(nullable = false, updatable = false)
-
     private School school;
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
+    @Column(nullable = false)
+    private int currentYear;
+    @Column(nullable = false)
+    private int currentSemester;
+
 
     private String name;
 
-    public Structure() {
+    private int status;
+
+    public StudyPeriod() {
     }
 
     public School getSchool() {
@@ -30,11 +35,27 @@ public class Structure {
         return id;
     }
 
+    public int getCurrentYear() {
+        return currentYear;
+    }
+
+    public int getCurrentSemester() {
+        return currentSemester;
+    }
+
     public String getName() {
         return name;
     }
 
     public void setName(String name) {
         this.name = name;
+    }
+
+    public int getStatus() {
+        return status;
+    }
+
+    public void setStatus(int status) {
+        this.status = status;
     }
 }

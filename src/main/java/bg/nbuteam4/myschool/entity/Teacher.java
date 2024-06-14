@@ -2,14 +2,14 @@ package bg.nbuteam4.myschool.entity;
 
 import jakarta.persistence.*;
 
-//Structure is "grade" 5a,5b, 12a...
+import java.util.IdentityHashMap;
+
 @Entity
-public class Structure {
+public class Teacher {
 
 
     @ManyToOne
     @JoinColumn(nullable = false, updatable = false)
-
     private School school;
 
     @Id
@@ -19,7 +19,11 @@ public class Structure {
 
     private String name;
 
-    public Structure() {
+    private String egn;
+
+
+    public Teacher() {
+
     }
 
     public School getSchool() {
@@ -37,4 +41,14 @@ public class Structure {
     public void setName(String name) {
         this.name = name;
     }
+
+    public String getEgn() {
+        return egn;
+    }
+
+    public void setEgn(String egn) {
+        this.egn = egn;
+    }
 }
+
+
