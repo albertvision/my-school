@@ -37,7 +37,7 @@ public class ClassStudent {
         return studyPeriod;
     }
 
-    public SchoolClass getStructure() {
+    public SchoolClass getSchoolClass() {
         return schoolClass;
     }
 

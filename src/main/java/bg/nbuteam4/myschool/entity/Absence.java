@@ -25,6 +25,7 @@ public class Absence {
     private int studentNumberInClass;
 
     @Column(name = "absence_date", nullable = false)
+    @Temporal(TemporalType.DATE)
     private LocalDate absenceDate;
 
     @ManyToOne

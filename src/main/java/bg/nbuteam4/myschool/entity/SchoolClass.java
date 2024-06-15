@@ -4,7 +4,7 @@ import jakarta.persistence.*;
 
 //SchoolClass is "grade" 5a,5b, 12a...
 @Entity
-@Table(name = "structure",
+@Table(name = "school_class",
         uniqueConstraints = @UniqueConstraint(columnNames = {"school_id", "name"}))
 
 public class SchoolClass {

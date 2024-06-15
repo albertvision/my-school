@@ -45,6 +45,7 @@ public class Mark { //it used to be called "Result" but it was too ambiguous
     private int status; //0 - текуща, 1 - срочна, 9 - годишна
 
     @Column(nullable = false)
+    @Temporal(TemporalType.TIMESTAMP)
     private LocalDateTime dateTime;
 
     public Mark() {
