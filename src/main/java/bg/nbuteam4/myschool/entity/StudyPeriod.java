@@ -3,6 +3,8 @@ package bg.nbuteam4.myschool.entity;
 import jakarta.persistence.*;
 import org.yaml.snakeyaml.events.Event;
 
+import java.time.Year;
+
 @Entity
 @Table(name = "study_period",
         uniqueConstraints = @UniqueConstraint(columnNames = {"school_id", "current_year", "current_semester"}))
@@ -16,11 +18,11 @@ public class StudyPeriod {
     @JoinColumn(name = "school_id", nullable = false)
     private School school;
     @Column(name = "current_year", nullable = false)
-    private int currentYear;
+    private Year currentYear;
     @Column(name = "current_semester", nullable = false)
     private int currentSemester;
     private String name;
-
+    @Column(unique = true)
     private int status;
 
     public StudyPeriod() {
@@ -34,7 +36,7 @@ public class StudyPeriod {
         return id;
     }
 
-    public int getCurrentYear() {
+    public Year getCurrentYear() {
         return currentYear;
     }
 

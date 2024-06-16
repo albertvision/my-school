@@ -1,6 +1,7 @@
 package bg.nbuteam4.myschool.entity;
 
 import jakarta.persistence.*;
+import org.hibernate.annotations.Check;
 
 import java.time.DayOfWeek;
 
@@ -23,11 +24,12 @@ public class Program {
     @Column(name = "lesson_order", nullable = false)
     private int lessonOrder;
 
+
     @ManyToOne
-    @JoinColumn(nullable = false)
+    @JoinColumn
     private EducObj educObj;
     @ManyToOne
-    @JoinColumn(nullable = false)
+    @JoinColumn
     private Teacher teacher;
 
     public Program() {

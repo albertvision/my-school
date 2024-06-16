@@ -4,6 +4,7 @@ import jakarta.persistence.*;
 import jakarta.validation.Constraint;
 import jakarta.validation.constraints.Max;
 import jakarta.validation.constraints.Min;
+import org.hibernate.annotations.Check;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
@@ -35,8 +36,9 @@ public class Mark { //it used to be called "Result" but it was too ambiguous
     @ManyToOne
     @JoinColumn(name = "teacher_id", nullable = false)
     private Teacher teacher;
-    @Min(1)
-    @Max(6)
+//    @Min(1)
+//    @Max(6)
+    @Check(constraints = "`value` between 1 and 6")
     private double value;
     @ManyToOne
     @JoinColumn(nullable = false)

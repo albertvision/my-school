@@ -1,0 +1,113 @@
+<!DOCTYPE html>
+<html th:replace="~{base :: layout(~{::body})}" xmlns:th="http://www.thymeleaf.org">
+<body>
+<div class="container">
+    <div class="page-header">
+        <h1 th:text="${title}"></h1>
+        <p th:if="${result} != null"
+           th:class="'alert alert-' + ${result.type().getUiClass()}"
+           th:text="${result.message()}"/>
+
+        <!-- Form to select StudyPeriod and SchoolClass -->
+        <form th:action="@{/program}" method="post">
+            <div class="form-group">
+                <label for="studyPeriodId">Избери учебен период</label>
+                <select id="studyPeriodId" name="studyPeriodId" class="form-control" required>
+                    <option value="">Избери...</option>
+                    <option th:each="studyPeriod : ${studyPeriods}" th:value="${studyPeriod.id}"
+                            th:text="${studyPeriod.currentYear + ' ' + studyPeriod.name + ' (' + studyPeriod.currentSemester + ')'}"></option>
+                </select>
+            </div>
+            <div class="form-group">
+                <label for="schoolClassId">Избери клас</label>
+                <select id="schoolClassId" name="schoolClassId" class="form-control" required>
+                    <option value="">Избери...</option>
+                    <option th:each="schoolClass : ${schoolClasses}" th:value="${schoolClass.id}"
+                            th:text="${schoolClass.getSchool().getName() + ' - ' + schoolClass.name}"></option>
+                </select>
+            </div>
+            <button type="submit" class="btn btn-primary">Покажи програма</button>
+        </form>
+    </div>
+
+    <!-- Display selected SchoolClass and StudyPeriod names -->
+    <div class="container mt-3" th:if="${schoolClass != null and studyPeriod != null}">
+        <h2 class="font-weight-bold" th:text="${schoolClass.name + ' - ' + studyPeriod.name}"></h2>
+    </div>
+
+    <div class="panel panel-default" th:if="${programCells != null}">
+        <div class="table-responsive">
+            <table class="table table-bordered table-hover table-striped">
+                <thead>
+                <tr>
+                    <th>Ден\Час</th>
+                    <th>1</th>
+                    <th>2</th>
+                    <th>3</th>
+                    <th>4</th>
+                    <th>5</th>
+                    <th>6</th>
+                    <th>7</th>
+                    <th>8</th>
+                </tr>
+                </thead>
+                <tbody>
+                <tr>
+                    <td>Понделник</td>
+                    <td th:each="lessonOrder : ${#numbers.sequence(1, 8)}">
+                        <span th:each="programCell : ${programCells}" th:if="${programCell.dayOfWeek.name} == 'MONDAY' and ${programCell.lessonOrder} == ${lessonOrder}">
+                            <span th:if="${programCell.educObj != null}" th:text="${programCell.educObj.name}"></span>
+                            <br>
+                            <span th:if="${programCell.teacher != null}" th:text="${programCell.teacher.name}"></span>
+                        </span>
+                    </td>
+                </tr>
+                <tr>
+                    <td>Вторник</td>
+                    <td th:each="lessonOrder : ${#numbers.sequence(1, 8)}">
+                        <span th:each="programCell : ${programCells}" th:if="${programCell.dayOfWeek.name} == 'TUESDAY' and ${programCell.lessonOrder} == ${lessonOrder}">
+                            <span th:if="${programCell.educObj != null}" th:text="${programCell.educObj.name}"></span>
+                            <br>
+                            <span th:if="${programCell.teacher != null}" th:text="${programCell.teacher.name}"></span>
+                        </span>
+                    </td>
+                </tr>
+                <tr>
+                    <td>Сряда</td>
+                    <td th:each="lessonOrder : ${#numbers.sequence(1, 8)}">
+                        <span th:each="programCell : ${programCells}" th:if="${programCell.dayOfWeek.name} == 'WEDNESDAY' and ${programCell.lessonOrder} == ${lessonOrder}">
+                            <span th:if="${programCell.educObj != null}" th:text="${programCell.educObj.name}"></span>
+                            <br>
+                            <span th:if="${programCell.teacher != null}" th:text="${programCell.teacher.name}"></span>
+                        </span>
+                    </td>
+                </tr>
+                <tr>
+                    <td>Четвъртък</td>
+                    <td th:each="lessonOrder : ${#numbers.sequence(1, 8)}">
+                        <span th:each="programCell : ${programCells}" th:if="${programCell.dayOfWeek.name} == 'THURSDAY' and ${programCell.lessonOrder} == ${lessonOrder}">
+                            <span th:if="${programCell.educObj != null}" th:text="${programCell.educObj.name}"></span>
+                            <br>
+                            <span th:if="${programCell.teacher != null}" th:text="${programCell.teacher.name}"></span>
+                        </span>
+                    </td>
+                </tr>
+                <tr>
+                    <td>Петък</td>
+                    <td th:each="lessonOrder : ${#numbers.sequence(1, 8)}">
+                        <span th:each="programCell : ${programCells}" th:if="${programCell.dayOfWeek.name} == 'FRIDAY' and ${programCell.lessonOrder} == ${lessonOrder}">
+                            <span th:if="${programCell.educObj != null}" th:text="${programCell.educObj.name}"></span>
+                            <br>
+                            <span th:if="${programCell.teacher != null}" th:text="${programCell.teacher.name}"></span>
+                        </span>
+                    </td>
+                </tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+
+</div>
+</body>
+</html>

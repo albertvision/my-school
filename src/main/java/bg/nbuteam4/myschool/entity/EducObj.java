@@ -27,12 +27,12 @@ public class EducObj { //this is subject in school
         return id;
     }
 
-    public String getSubjectName() {
+    public String getName() {
         return name;
     }
 
-    public void setSubjectName(String subjectName) {
-        this.name = subjectName;
+    public void setName(String name) {
+        this.name = name;
     }
 
 }
