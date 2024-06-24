@@ -1,5 +1,8 @@
 <!DOCTYPE html>
 <html th:replace="~{base :: layout(~{::body})}" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <title>Education Objects</title>
+</head>
 <body>
 <div class="container">
     <div class="page-header">
@@ -30,31 +33,40 @@
         <h2 class="font-weight-bold" th:text="${school.name}"></h2>
     </div>
 
-
     <!-- Table displaying educational objects -->
-    <div class="panel panel-default">
+    <div th:if="${school != null}" class="panel panel-default">
         <div class="table-responsive">
-            <table class="table table-bordered table-hover table-striped">
+            <table  th:if="${school != null}" class="table table-bordered table-hover table-striped">
                 <thead>
                 <tr>
                     <th>#</th>
                     <th>Предмет</th>
-                    <th th:if="${school == null}">Училище</th>
                     <th colspan="2">Действия</th>
                 </tr>
                 </thead>
-                <tbody th:remove="${educObjs.size()} > 0 ? all-but-first : none">
+                <tbody>
                 <tr th:each="educObj : ${educObjs}">
                     <td th:text="${educObj.id}"></td>
-                    <td th:text="${educObj.name}"></td>
+                        <td th:id="'name-'+${educObj.id}" th:text="${educObj.name}"></td>
                     <td th:text="${educObj.school.name}" th:if="${school == null}"></td>
                     <td width="10">
-                        <a th:href="'/educObjects/' + ${educObj.id}"
+                        <a th:id="'edit-btn-'+${educObj.id}" href="javascript:void(0);"
                            class="btn btn-xs btn-warning"
+                           th:onclick="'enableEdit(' + ${educObj.id} + ')'"
                            data-toggle="tooltip"
                            title="Редактиране">
                             <i class="glyphicon glyphicon-pencil"></i>
                         </a>
+                        <form  th:id="${educObj.id}+'-form-edit'" th:action="@{'/educObjects/' + ${educObj.id} + '/update'}" method="post">
+                        <a th:id="'save-btn-'+${educObj.id}" href="javascript:void(0);"
+                           class="btn btn-xs btn-success"
+                           th:onclick="'saveEdit(' + ${educObj.id} + ')'"
+                           data-toggle="tooltip"
+                           title="Запазване"
+                           style="display: none;">
+                            <i class="glyphicon glyphicon-ok"></i>
+                        </a>
+                        </form>
                     </td>
                     <td width="10">
                         <form th:action="'/educObjects/' + ${educObj.id} + '/delete'" method="post">
@@ -67,14 +79,38 @@
                         </form>
                     </td>
                 </tr>
-                <tr>
-                    <td colspan="4">Няма записи.</td>
-                </tr>
                 </tbody>
             </table>
         </div>
     </div>
 </div>
+
+<script>
+    function enableEdit(educObjId) {
+        let nameCell = document.getElementById('name-' + educObjId);
+        let editButton = document.getElementById('edit-btn-' + educObjId);
+        let saveButton = document.getElementById('save-btn-' + educObjId);
+
+        nameCell.innerHTML = '<input form="' + educObjId + '-form-edit" type="text" name="name" id="edit-name-' + educObjId + '" value="' + nameCell.innerText + '" class="form-control"/>';
+
+        editButton.style.display = 'none';
+        saveButton.style.display = 'inline';
+    }
+
+    function saveEdit(educObjId) {
+        document.getElementById(educObjId+'-form-edit').submit();
+        let newName = document.getElementById('edit-name-' + educObjId).value;
+
+                // Handle successful response
+                let nameCell = document.getElementById('name-' + educObjId);
+                let editButton = document.getElementById('edit-btn-' + educObjId);
+                let saveButton = document.getElementById('save-btn-' + educObjId);
+
+                nameCell.innerText = newName;
+                saveButton.style.display = 'none';
+                editButton.style.display = 'inline';
+
+    }
+</script>
 </body>
 </html>
-
