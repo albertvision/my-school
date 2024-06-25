@@ -20,4 +20,12 @@ public class GlobalFiltersRequest {
     public Long getStudyPeriodId() {
         return studyPeriodId;
     }
+
+    public void setSchoolId(Long schoolId) {
+        this.schoolId = schoolId;
+    }
+
+    public void setStudyPeriodId(Long studyPeriodId) {
+        this.studyPeriodId = studyPeriodId;
+    }
 }

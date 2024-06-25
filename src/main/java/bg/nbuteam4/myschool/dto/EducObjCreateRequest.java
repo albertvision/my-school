@@ -16,10 +16,6 @@ public class EducObjCreateRequest {
     public EducObjCreateRequest() {
     }
 
-    public EducObjCreateRequest(Long schoolId, String name) {
-
-        this.name = name;
-    }
 
     public Long getSchoolId() {
         return schoolId;

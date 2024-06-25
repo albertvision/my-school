@@ -5,10 +5,10 @@
 <div class="row">
     <div class="col col-md-12">
         <h1>Табло</h1>
-        <form th:action="@{'/set-global-filters'}" method="post">
+        <form th:action="@{/set-global-filters}" method="post">
             <div class="form-group">
                 <label for="schoolId">Избери училище</label>
-                <select id="schoolId" name="school_id" class="form-control" required>
+                <select id="schoolId" name="schoolId" class="form-control" required>
                     <option value="">Избери...</option>
                     <option th:each="school : ${schools}" th:value="${school.id}"
                             th:selected="${session.get('schoolId')} == ${school.id}"

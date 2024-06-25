@@ -23,7 +23,7 @@
                 <select id="schoolClassId" name="schoolClassId" class="form-control" required>
                     <option value="">Избери...</option>
                     <option th:each="schoolClass : ${schoolClasses}" th:value="${schoolClass.id}"
-                            th:text="${schoolClass.getSchool().getName() + ' - ' + schoolClass.name}"></option>
+                            th:text="${schoolClass.school.name + ' - ' + schoolClass.name}"></option>
                 </select>
             </div>
             <button type="submit" class="btn btn-primary">Покажи програма</button>
