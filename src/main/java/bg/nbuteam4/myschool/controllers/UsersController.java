@@ -13,10 +13,13 @@ import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.server.ResponseStatusException;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 import org.springframework.web.servlet.view.RedirectView;
 
 import java.util.List;
+
+import static org.springframework.http.HttpStatus.NOT_FOUND;
 
 @Controller
 @RequestMapping("/users")
@@ -43,16 +46,19 @@ public class UsersController {
         return "users/index";
     }
 
-    @GetMapping("/create")
-    String create(Model model) {
-        if (!model.containsAttribute("user")) {
-            model.addAttribute("user", new UserCreateRequest());
-        }
+    @GetMapping("/{id}")
+    String edit(
+            Model model,
+            @PathVariable("id") Long id
+    ) {
+        User user = userRepository.findById(id).orElseThrow(() -> new ResponseStatusException(NOT_FOUND));
 
-        model.addAttribute("title", "Нов потребител");
+        model.addAttribute("user", user);
+
+        model.addAttribute("title", "Редактиране на потребител");
         model.addAttribute("roles", Role.values());
 
-        return "users/create";
+        return "users/save";
     }
 
     @PostMapping("/create")
@@ -73,6 +79,7 @@ public class UsersController {
         user.setUsername(requestUser.getUsername());
         user.setPassword(passwordEncoder.encode(requestUser.getPassword()));
         user.setRole(Role.valueOf(requestUser.getRole()));
+        user.setPersonalCode(requestUser.getPersonalCode());
 
         // todo take care of when username is taken
         userRepository.save(user);
@@ -80,6 +87,19 @@ public class UsersController {
         attributes.addFlashAttribute("result", new ActionResult("Успешно създаване.", ActionResultType.SUCCESS));
 
         return "redirect:/users";
+    }
+
+
+    @GetMapping("/create")
+    String create(Model model) {
+        if (!model.containsAttribute("user")) {
+            model.addAttribute("user", new UserCreateRequest());
+        }
+
+        model.addAttribute("title", "Нов потребител");
+        model.addAttribute("roles", Role.values());
+
+        return "users/save";
     }
 
     @PostMapping("/{id}/delete")

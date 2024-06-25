@@ -21,6 +21,8 @@ public class User implements UserDetails {
     @Enumerated(EnumType.STRING)
     private Role role;
 
+    private String personalCode;
+
     public User() {
     }
 
@@ -80,4 +82,12 @@ public class User implements UserDetails {
         return true;
     }
 
+    public String getPersonalCode() {
+        return personalCode;
+    }
+
+    public User setPersonalCode(String personalCode) {
+        this.personalCode = personalCode;
+        return this;
+    }
 }

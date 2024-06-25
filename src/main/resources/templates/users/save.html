@@ -13,7 +13,7 @@
         <div class="col-md-6">
             <div class="panel panel-default">
                 <div class="panel-body">
-                    <form method="post" action="/users/create">
+                    <form method="post">
                         <div th:replace="~{form-group :: input('username', 'text', 'Потребителско име', ${user.getUsername()})}">
                         </div>
                         <div th:replace="~{form-group :: input('password', 'password', 'Парола', _)}">
@@ -28,6 +28,8 @@
                                         th:selected="${user.getRole().equals(role.name())}"
                                 />
                             </select>
+                        </div>
+                        <div th:replace="~{form-group :: input('personalCode', 'number', 'ЕГН', ${user.getPersonalCode()})}">
                         </div>
                         <button type="submit" class="btn btn-primary">Добави</button>
                         <a href="/users" class="btn btn-link">Отказ</a>
