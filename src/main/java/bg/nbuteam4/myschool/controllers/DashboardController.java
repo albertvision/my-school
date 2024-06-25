@@ -34,32 +34,18 @@ public class DashboardController {
     @GetMapping
     String index(
             Model model,
-            HttpSession session
+            HttpSession session,
+            GlobalFiltersRequest globalFiltersRequest
     ) {
-//        Long selectedSchoolId = schoolId
-//                .orElseGet(() -> session.getAttribute("schoolId") != null ? (Long) session.getAttribute("schoolId") : null);
-//
-//        Optional<School> school = schoolRepository.findById(selectedSchoolId);
-//
-//        if (school.isEmpty()) {
-//            model.addAttribute("action", new ActionResult("Избрали сте несъществуващо училище.", ActionResultType.ERROR));
-//        } else {
-//            session.setAttribute("schoolId", selectedSchoolId);
-//        }
-//
-//
-//        if (selectedSchoolId != null) {
-//            studyPeriodRepository.findBySchoolIdAndStatusEquals(selectedSchoolId, 1);
-//
-//            Long selectedStudyPeriod = studyPeriodId
-//                    .orElseGet(() -> session.getAttribute("studyPeriodId") != null ? (Long) session.getAttribute("studyPeriodId") : null);
-//            session.setAttribute("studyPeriodId", selectedStudyPeriod);
-//
-//            model.addAttribute(
-//                    "studyPeriods",
-//                    studyPeriodRepository.findBySchoolIdAndStatusEquals(selectedSchoolId, 1)
-//            );
-//        }
+
+        Long selectedSchoolId = (Long) session.getAttribute("schoolId");
+
+        if (selectedSchoolId != null) {
+            model.addAttribute(
+                    "studyPeriods",
+                    studyPeriodRepository.findBySchoolIdAndStatusEquals(selectedSchoolId, 1)
+            );
+        }
 
 
         model.addAttribute("title", "Табло");
@@ -83,6 +69,12 @@ public class DashboardController {
             return "redirect:/";
         }
 
+        if (globalFiltersRequest.getSchoolId() == null) {
+            session.setAttribute("schoolId", null);
+
+            return "redirect:/";
+        }
+
         Optional<School> school = schoolRepository.findById(globalFiltersRequest.getSchoolId());
         if (school.isEmpty()) {
             attributes.addFlashAttribute("result", new ActionResult("Избрали сте несъщуствуващо училище.", ActionResultType.ERROR));
@@ -91,17 +83,21 @@ public class DashboardController {
         }
         session.setAttribute("schoolId", school.get().getId());
 
-        if (globalFiltersRequest.getStudyPeriodId() != null) {
-            Optional<StudyPeriod> studyPeriods = studyPeriodRepository.findById(globalFiltersRequest.getStudyPeriodId());
+        if (globalFiltersRequest.getStudyPeriodId() == null) {
+            session.setAttribute("studyPeriodId", null);
 
-            if (studyPeriods.isEmpty() || !studyPeriods.get().getSchool().getId().equals(school.get().getId())) {
-                attributes.addFlashAttribute("result", new ActionResult("Избрали сте невалиден срок.", ActionResultType.ERROR));
-
-                return "redirect:/";
-            }
-
-            session.setAttribute("studyPeriodId", studyPeriods.get().getId());
+            return "redirect:/";
         }
+
+        Optional<StudyPeriod> studyPeriods = studyPeriodRepository.findById(globalFiltersRequest.getStudyPeriodId());
+
+        if (studyPeriods.isEmpty() || !studyPeriods.get().getSchool().getId().equals(school.get().getId())) {
+            attributes.addFlashAttribute("result", new ActionResult("Избрали сте невалиден срок.", ActionResultType.ERROR));
+
+            return "redirect:/";
+        }
+
+        session.setAttribute("studyPeriodId", studyPeriods.get().getId());
 
         return "redirect:/";
     }
