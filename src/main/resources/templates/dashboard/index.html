@@ -4,7 +4,9 @@
 <div class="container">
 <div class="row">
     <div class="col col-md-12">
-        <h1>Табло</h1>
+        <div class="page-header">
+            <h1>Табло</h1>
+        </div>
         <form th:action="@{/set-global-filters}" method="post">
             <div class="form-group">
                 <label for="schoolId">Избери училище</label>
@@ -17,7 +19,7 @@
             </div>
             <div th:if="${studyPeriods != null}" class="form-group" id="js-study-period-group">
                 <label for="studyPeriodId">Избери срок</label>
-                <select id="studyPeriodId" name="study_period_id" class="form-control">
+                <select id="studyPeriodId" name="studyPeriodId" class="form-control">
                     <option value="">Избери...</option>
                     <option th:each="studyPeriod : ${studyPeriods}" th:value="${studyPeriod.id}"
                             th:selected="${session.get('studyPeriodId')} == ${studyPeriod.id}"
