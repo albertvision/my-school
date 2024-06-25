@@ -5,6 +5,7 @@ import bg.nbuteam4.myschool.dto.ActionResultType;
 import bg.nbuteam4.myschool.entity.*;
 import bg.nbuteam4.myschool.repository.SchoolRepository;
 import bg.nbuteam4.myschool.repository.EducObjRepository;
+import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -88,9 +89,16 @@ public class EducObjController {
 
     @PostMapping("/{id}/delete")
     RedirectView index(RedirectAttributes attributes, @PathVariable("id") Long id) {
-        educObjRepository.deleteById(id);
 
-        attributes.addFlashAttribute("result", new ActionResult("Успешно изтриване.", ActionResultType.SUCCESS));
+        try {
+            educObjRepository.deleteById(id);
+            attributes.addFlashAttribute("result", new ActionResult("Успешно изтриване.", ActionResultType.SUCCESS));
+        } catch (DataIntegrityViolationException dataIntegrityViolationException) {
+            System.out.println("Съществуват свързани данни, изтриването не е възможно.");
+            attributes.addFlashAttribute("result", new ActionResult("Съществуват свързани данни, изтриването не е възможно.", ActionResultType.ERROR));
+        } catch (Exception e) {
+            throw new RuntimeException(e);
+        }
 
         return new RedirectView("/educObjects");
     }
