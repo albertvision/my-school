@@ -23,6 +23,10 @@ public class EducObj { //this is subject in school
         return school;
     }
 
+    public void setSchool(School school) {
+        this.school = school;
+    }
+
     public Long getId() {
         return id;
     }

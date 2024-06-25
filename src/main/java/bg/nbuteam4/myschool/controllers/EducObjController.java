@@ -31,12 +31,23 @@ public class EducObjController {
     @GetMapping
     public String index(Model model) {
         model.addAttribute("title", "Преподавани предмети");
-//        model.addAttribute("educObjs", educObjRepository.findAll());
-        model.addAttribute("schools", schoolRepository.findAll());
+
+//        model.addAttribute("schools", schoolRepository.findAll());
+        School school = schoolRepository.findById(1L).orElse(null);
+        List<EducObj> schoolEducObjs = educObjRepository.findBySchoolId(1L);
+
+        model.addAttribute("school", school);
+
+        model.addAttribute("educObjs", schoolEducObjs);
+        model.addAttribute("title", "Преподавани предмети");
+//        model.addAttribute("schools", schoolRepository.findAll());
+
+
         return "educObjects/index";
     }
-
-    @PostMapping
+//TODO change these so that the school is taken from session
+    //old
+    /* @PostMapping
     public String find(@RequestParam Long schoolId, Model model) {
         List<EducObj> schoolEducObjs = educObjRepository.findBySchoolId(schoolId);
 
@@ -45,10 +56,10 @@ public class EducObjController {
 
         model.addAttribute("educObjs", schoolEducObjs);
         model.addAttribute("title", "Преподавани предмети");
-        model.addAttribute("schools", schoolRepository.findAll());
+//        model.addAttribute("schools", schoolRepository.findAll());
 
         return "educObjects/index";
-    }
+    }*/
 
 
 //for editing fields
@@ -87,6 +98,32 @@ public class EducObjController {
 //    }
 //
 
+
+
+//    @GetMapping("/create")
+//    public String showCreateForm(Model model) {
+//        model.addAttribute("title", "Добавяне на нов Предмет");
+//        model.addAttribute("educObj", new EducObj());
+//        model.addAttribute("schools", schoolRepository.findAll());
+//        return "educObjects/create"; //
+//    }
+
+    @PostMapping("/create")
+    public String createEducObj(@RequestParam Long schoolId, @RequestParam String name, RedirectAttributes redirectAttributes) {
+        EducObj educObj = new EducObj();
+            educObj.setName(name); // Промяна на полето name (или други полета)
+//            educObj.setSchool();
+            educObjRepository.save(educObj); // Записване на промените
+
+        educObjRepository.save(educObj);
+        redirectAttributes.addFlashAttribute("result", new ActionResult("Успешно добавяне.", ActionResultType.SUCCESS));
+        return "redirect:/educObjects";
+    }
+
+
+
+
+
     @PostMapping("/{id}/delete")
     RedirectView index(RedirectAttributes attributes, @PathVariable("id") Long id) {
 
@@ -102,6 +139,8 @@ public class EducObjController {
 
         return new RedirectView("/educObjects");
     }
+
+
 
 
 }

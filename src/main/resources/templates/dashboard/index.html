@@ -6,6 +6,19 @@
     <div class="col col-md-12">
         <h1>Табло</h1>
     </div>
+
+    <!-- Dropdown menu to select School -->
+    <form th:action="@{/educObjects}" method="post">
+        <div class="form-group">
+            <label for="schoolId">Избери училище</label>
+            <select id="schoolId" name="schoolId" class="form-control" required>
+                <option value="">Избери...</option>
+                <option th:each="school : ${schools}" th:value="${school.id}"
+                        th:text="${school.id + ' - ' + school.name}"></option>
+            </select>
+        </div>
+        <button type="submit" class="btn btn-primary">Избери</button>
+    </form>
 </div>
 </div>
 </body>
