@@ -2,18 +2,23 @@ package bg.nbuteam4.myschool.controllers;
 
 import bg.nbuteam4.myschool.dto.ActionResult;
 import bg.nbuteam4.myschool.dto.ActionResultType;
+import bg.nbuteam4.myschool.dto.EducObjCreateRequest;
+import bg.nbuteam4.myschool.dto.UserCreateRequest;
 import bg.nbuteam4.myschool.entity.*;
 import bg.nbuteam4.myschool.repository.SchoolRepository;
 import bg.nbuteam4.myschool.repository.EducObjRepository;
+import jakarta.validation.Valid;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
+import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 import org.springframework.web.servlet.view.RedirectView;
 
 import java.util.List;
+import java.util.Optional;
 
 @Controller
 @RequestMapping("/educObjects")
@@ -99,7 +104,6 @@ public class EducObjController {
 //
 
 
-
 //    @GetMapping("/create")
 //    public String showCreateForm(Model model) {
 //        model.addAttribute("title", "Добавяне на нов Предмет");
@@ -109,19 +113,26 @@ public class EducObjController {
 //    }
 
     @PostMapping("/create")
-    public String createEducObj(@RequestParam Long schoolId, @RequestParam String name, RedirectAttributes redirectAttributes) {
-        EducObj educObj = new EducObj();
-            educObj.setName(name); // Промяна на полето name (или други полета)
-//            educObj.setSchool();
-            educObjRepository.save(educObj); // Записване на промените
+    public String createEducObj(@Valid @ModelAttribute EducObjCreateRequest requestEducObj,
+                                BindingResult result,
+                                RedirectAttributes redirectAttributes) {
+        if (result.hasErrors()) {
+            redirectAttributes.addFlashAttribute("result", new ActionResult("Има невалидно попълнени полета.", ActionResultType.ERROR));
+            redirectAttributes.addFlashAttribute("errors", result);
+            redirectAttributes.addFlashAttribute("educObj", requestEducObj);
 
-        educObjRepository.save(educObj);
-        redirectAttributes.addFlashAttribute("result", new ActionResult("Успешно добавяне.", ActionResultType.SUCCESS));
+            return "redirect:/educObjects";
+        }
+
+        EducObj educObj = new EducObj();
+        educObj.setName(requestEducObj.getName());
+        educObj.setSchool(schoolRepository.findById(requestEducObj.getSchoolId()).orElse(null));
+
+        educObjRepository.save(educObj); // Записване на промените
+
+        redirectAttributes.addFlashAttribute("result", new ActionResult("Успешно създаване.", ActionResultType.SUCCESS));
         return "redirect:/educObjects";
     }
-
-
-
 
 
     @PostMapping("/{id}/delete")
@@ -139,8 +150,6 @@ public class EducObjController {
 
         return new RedirectView("/educObjects");
     }
-
-
 
 
 }
