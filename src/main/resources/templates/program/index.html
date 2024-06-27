@@ -15,6 +15,7 @@
                 <select id="studyPeriodId" name="studyPeriodId" class="form-control" required>
                     <option value="">Избери...</option>
                     <option th:each="studyPeriod : ${studyPeriods}" th:value="${studyPeriod.id}"
+                            th:selected="${session.get('studyPeriodId')} == ${studyPeriod.id}"
                             th:text="${studyPeriod.currentYear + ' ' + studyPeriod.name + ' (' + studyPeriod.currentSemester + ')'}"></option>
                 </select>
             </div>

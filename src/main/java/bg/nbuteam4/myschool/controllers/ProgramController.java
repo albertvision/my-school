@@ -7,6 +7,7 @@ import bg.nbuteam4.myschool.entity.User;
 import bg.nbuteam4.myschool.repository.ProgramRepository;
 import bg.nbuteam4.myschool.repository.SchoolClassRepository;
 import bg.nbuteam4.myschool.repository.StudyPeriodRepository;
+import jakarta.servlet.http.HttpSession;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -36,7 +37,8 @@ public class ProgramController {
 
 
     @GetMapping
-    public String index(Model model) {
+    public String index(Model model,
+                        HttpSession session) {
         model.addAttribute("title", "Седмична програма");
         model.addAttribute("studyPeriods", studyPeriodRepository.findAll());
         model.addAttribute("schoolClasses", schoolClassRepository.findAll());
@@ -44,7 +46,9 @@ public class ProgramController {
     }
 
     @PostMapping
-    public String find(@RequestParam Long studyPeriodId, @RequestParam Long schoolClassId, Model model) {
+    public String find(@RequestParam Long studyPeriodId, @RequestParam Long schoolClassId,
+                       HttpSession session,
+                       Model model ) {
         // Logic to fetch program data based on studyPeriodId and schoolClassId
         List<Program> programCells = programRepository.findByStudyPeriodIdAndSchoolClassId(studyPeriodId, schoolClassId);
 

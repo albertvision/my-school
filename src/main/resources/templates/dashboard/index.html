@@ -23,7 +23,7 @@
                     <option value="">Избери...</option>
                     <option th:each="studyPeriod : ${studyPeriods}" th:value="${studyPeriod.id}"
                             th:selected="${session.get('studyPeriodId')} == ${studyPeriod.id}"
-                            th:text="${studyPeriod.name}"></option>
+                            th:text="${studyPeriod.currentYear + ' ' + studyPeriod.name + ' (' + studyPeriod.currentSemester + ')'}"></option>
                 </select>
             </div>
             <button type="submit" class="btn btn-primary">Избери</button>

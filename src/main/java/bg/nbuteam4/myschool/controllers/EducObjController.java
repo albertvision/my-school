@@ -3,14 +3,12 @@ package bg.nbuteam4.myschool.controllers;
 import bg.nbuteam4.myschool.dto.ActionResult;
 import bg.nbuteam4.myschool.dto.ActionResultType;
 import bg.nbuteam4.myschool.dto.EducObjCreateRequest;
-import bg.nbuteam4.myschool.dto.UserCreateRequest;
 import bg.nbuteam4.myschool.entity.*;
 import bg.nbuteam4.myschool.repository.SchoolRepository;
 import bg.nbuteam4.myschool.repository.EducObjRepository;
 import jakarta.servlet.http.HttpSession;
 import jakarta.validation.Valid;
 import org.springframework.dao.DataIntegrityViolationException;
-import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
@@ -19,7 +17,6 @@ import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 import org.springframework.web.servlet.view.RedirectView;
 
 import java.util.List;
-import java.util.Optional;
 
 @Controller
 @RequestMapping("/educObjects")
@@ -27,13 +24,13 @@ public class EducObjController {
 
     private final EducObjRepository educObjRepository;
     private final SchoolRepository schoolRepository;
-    private final HttpSession httpSession;
+    private final HttpSession session;
 
 
-    public EducObjController(EducObjRepository educObjRepository, SchoolRepository schoolRepository, HttpSession httpSession) {
+    public EducObjController(EducObjRepository educObjRepository, SchoolRepository schoolRepository, HttpSession session) {
         this.educObjRepository = educObjRepository;
         this.schoolRepository = schoolRepository;
-        this.httpSession = httpSession;
+        this.session = session;
     }
 
 
@@ -42,7 +39,7 @@ public class EducObjController {
         model.addAttribute("title", "Преподавани предмети");
 
 
-        long schoolId = (long) httpSession.getAttribute("schoolId");
+        long schoolId = (long) session.getAttribute("schoolId");
 
         School school = schoolRepository.findById(schoolId).orElse(null);
         List<EducObj> schoolEducObjs = educObjRepository.findBySchoolId(schoolId);
