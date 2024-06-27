@@ -108,57 +108,6 @@
         </div>
     </div>
 </div>
-
-<script>
-    function enableEdit(educObjId) {
-        let nameCell = document.getElementById('name-' + educObjId);
-        let editButton = document.getElementById('edit-btn-' + educObjId);
-        let saveButton = document.getElementById('save-btn-' + educObjId);
-
-        nameCell.innerHTML = '<input form="' + educObjId + '-form-edit" type="text" name="name" id="edit-name-' + educObjId + '" value="' + nameCell.innerText + '" class="form-control"/>';
-
-        editButton.style.display = 'none';
-        saveButton.style.display = 'inline';
-    }
-
-    function saveEdit(educObjId) {
-        document.getElementById(educObjId+'-form-edit').submit();
-        let newName = document.getElementById('edit-name-' + educObjId).value;
-
-                // Handle successful response
-                let nameCell = document.getElementById('name-' + educObjId);
-                let editButton = document.getElementById('edit-btn-' + educObjId);
-                let saveButton = document.getElementById('save-btn-' + educObjId);
-
-                nameCell.innerText = newName;
-                saveButton.style.display = 'none';
-                editButton.style.display = 'inline';
-    }
-
-    function hideAddButton() {
-        document.getElementById('addNewEducObjButton').style.visibility = "hidden";
-    }
-    function showAddButton() {
-        document.getElementById('addNewEducObjButton').style.visibility = "visible";
-    }
-    function addNewRow() {
-
-        hideAddButton();
-
-        document.getElementById("newRow").style.display = "";
-        document.getElementById("new-name").focus();
-    }
-
-    function submitNew() {
-        document.getElementById('new-form-create').submit();
-        //showAddButton();//?
-    }
-
-    function discardNewRow() {
-        document.getElementById("newRow").style.display = "none";
-        document.getElementById("new-name").value = "";
-        showAddButton();
-    }
-</script>
+<script src="/js/educObjects.js"></script>
 </body>
 </html>

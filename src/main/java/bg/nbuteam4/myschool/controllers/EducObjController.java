@@ -7,6 +7,7 @@ import bg.nbuteam4.myschool.dto.UserCreateRequest;
 import bg.nbuteam4.myschool.entity.*;
 import bg.nbuteam4.myschool.repository.SchoolRepository;
 import bg.nbuteam4.myschool.repository.EducObjRepository;
+import jakarta.servlet.http.HttpSession;
 import jakarta.validation.Valid;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.http.ResponseEntity;
@@ -26,10 +27,13 @@ public class EducObjController {
 
     private final EducObjRepository educObjRepository;
     private final SchoolRepository schoolRepository;
+    private final HttpSession httpSession;
 
-    public EducObjController(EducObjRepository educObjRepository, SchoolRepository schoolRepository) {
+
+    public EducObjController(EducObjRepository educObjRepository, SchoolRepository schoolRepository, HttpSession httpSession) {
         this.educObjRepository = educObjRepository;
         this.schoolRepository = schoolRepository;
+        this.httpSession = httpSession;
     }
 
 
@@ -37,9 +41,11 @@ public class EducObjController {
     public String index(Model model) {
         model.addAttribute("title", "Преподавани предмети");
 
-//        model.addAttribute("schools", schoolRepository.findAll());
-        School school = schoolRepository.findById(1L).orElse(null);
-        List<EducObj> schoolEducObjs = educObjRepository.findBySchoolId(1L);
+
+        long schoolId = (long) httpSession.getAttribute("schoolId");
+
+        School school = schoolRepository.findById(schoolId).orElse(null);
+        List<EducObj> schoolEducObjs = educObjRepository.findBySchoolId(schoolId);
 
         model.addAttribute("school", school);
 
@@ -129,13 +135,13 @@ public class EducObjController {
         educObj.setSchool(schoolRepository.findById(requestEducObj.getSchoolId()).orElse(null));
 
         educObjRepository.save(educObj); // Записване на промените
-
         redirectAttributes.addFlashAttribute("result", new ActionResult("Успешно създаване.", ActionResultType.SUCCESS));
         return "redirect:/educObjects";
     }
 
 
     @PostMapping("/{id}/delete")
+
     RedirectView index(RedirectAttributes attributes, @PathVariable("id") Long id) {
 
         try {

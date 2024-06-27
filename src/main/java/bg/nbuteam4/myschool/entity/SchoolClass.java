@@ -29,6 +29,10 @@ public class SchoolClass {
         return school;
     }
 
+    public void setSchool(School school) {
+        this.school = school;
+    }
+
     public String getName() {
         return name;
     }
