@@ -84,7 +84,7 @@ public class EducObjController {
 //    }
 
     @PostMapping("/{id}/update")
-    public String update(@PathVariable Long id, @RequestParam String name, Model model) {
+    public String update(@PathVariable Long id, @RequestParam String name) {
         EducObj educObj = educObjRepository.findById(id).orElse(null);
         if (educObj != null) {
             educObj.setName(name); // Промяна на полето name (или други полета)

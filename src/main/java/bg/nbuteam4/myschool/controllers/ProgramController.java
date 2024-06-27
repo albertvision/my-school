@@ -3,7 +3,7 @@ package bg.nbuteam4.myschool.controllers;
 import bg.nbuteam4.myschool.entity.Program;
 import bg.nbuteam4.myschool.entity.SchoolClass;
 import bg.nbuteam4.myschool.entity.StudyPeriod;
-import bg.nbuteam4.myschool.entity.User;
+
 import bg.nbuteam4.myschool.repository.ProgramRepository;
 import bg.nbuteam4.myschool.repository.SchoolClassRepository;
 import bg.nbuteam4.myschool.repository.StudyPeriodRepository;
@@ -13,8 +13,6 @@ import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 
-import java.time.DayOfWeek;
-import java.time.LocalDate;
 import java.util.List;
 
 @Controller
