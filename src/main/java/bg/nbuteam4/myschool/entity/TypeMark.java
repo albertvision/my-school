@@ -4,11 +4,12 @@ import jakarta.persistence.*;
 
 @Entity
 @Table(name = "type_mark",
-        uniqueConstraints = @UniqueConstraint(columnNames = {"mark_type", "school_id"}))
+        uniqueConstraints = @UniqueConstraint(columnNames = {"school_id", "name"}))
 public class TypeMark {
     @Id
-    @Column(name = "mark_type")
-    private int markType; //could be enum as well? Primary key might not work for different schools. Can be changed to only id, school and enum columns, I guess.
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name = "id")
+    private Long id; //could be enum as well? Primary key might not work for different schools. Can be changed to only id, school and enum columns, I guess.
     /*TypeMark
     0   Устно изпитване
     1   Активно участие
@@ -25,6 +26,7 @@ public class TypeMark {
     @ManyToOne
     @JoinColumn(name = "school_id", nullable = false)
     private School school;
+
     private String name;
 
     public TypeMark() {
@@ -34,8 +36,13 @@ public class TypeMark {
         return school;
     }
 
-    public int getMarkType() {
-        return markType;
+    public TypeMark setSchool(School school) {
+        this.school = school;
+        return this;
+    }
+
+    public Long getId() {
+        return id;
     }
 
     public String getName() {

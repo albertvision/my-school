@@ -2,16 +2,13 @@ package bg.nbuteam4.myschool.controllers;
 
 import bg.nbuteam4.myschool.dto.ActionResult;
 import bg.nbuteam4.myschool.dto.ActionResultType;
-
-import bg.nbuteam4.myschool.dto.SchoolClassCreateRequest;
-
+import bg.nbuteam4.myschool.dto.TypeMarkCreateRequest;
 import bg.nbuteam4.myschool.entity.School;
-import bg.nbuteam4.myschool.entity.SchoolClass;
-import bg.nbuteam4.myschool.repository.SchoolClassRepository;
+import bg.nbuteam4.myschool.entity.TypeMark;
 import bg.nbuteam4.myschool.repository.SchoolRepository;
+import bg.nbuteam4.myschool.repository.TypeMarkRepository;
 import jakarta.servlet.http.HttpSession;
 import jakarta.validation.Valid;
-import org.springframework.boot.autoconfigure.session.SessionProperties;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -23,71 +20,66 @@ import org.springframework.web.servlet.view.RedirectView;
 import java.util.List;
 
 @Controller
-@RequestMapping("/schoolClass")
-public class SchoolClassController {
+@RequestMapping("/typeMark")
+public class TypeMarkController {
 
-    private final SchoolClassRepository schoolClassRepository;
+    private final TypeMarkRepository typeMarkRepository;
     private final SchoolRepository schoolRepository;
-    private final SessionProperties sessionProperties;
+
     private final HttpSession httpSession;
-    private final DashboardController dashboardController;
 
 
-    public SchoolClassController(SchoolClassRepository schoolClassRepository, SchoolRepository schoolRepository, SessionProperties sessionProperties, HttpSession httpSession, DashboardController dashboardController) {
-        this.schoolClassRepository = schoolClassRepository;
+    public TypeMarkController(TypeMarkRepository typeMarkRepository, SchoolRepository schoolRepository, HttpSession httpSession) {
+        this.typeMarkRepository = typeMarkRepository;
         this.schoolRepository = schoolRepository;
-        this.sessionProperties = sessionProperties;
         this.httpSession = httpSession;
-        this.dashboardController = dashboardController;
     }
 
 
     @GetMapping
     public String index(Model model) {
-        model.addAttribute("title", "Класове");
-
-
+        model.addAttribute("title", "Типове оценки");
 
         long schoolId = (long) httpSession.getAttribute("schoolId");
 
         School school = schoolRepository.findById(schoolId).orElse(null);
-        List<SchoolClass> schoolschoolClass = schoolClassRepository.findBySchoolId(schoolId);
+        List<TypeMark> typeMarksClass = typeMarkRepository.findBySchoolIdOrderByIdAsc(schoolId);
 
         model.addAttribute("school", school);
-        model.addAttribute("schoolClass", schoolschoolClass);
-        return "schoolClass/index";
+        model.addAttribute("typeMarks", typeMarksClass);
+        return "typeMark/index";
     }
 
     @PostMapping("/{id}/update")
-    public String update(@PathVariable Long id, @RequestParam String name, Model model) {
-        SchoolClass schoolClass = schoolClassRepository.findById(id).orElse(null);
-        if (schoolClass != null) {
-            schoolClass.setName(name); // Промяна на полето name (или други полета)
-            schoolClassRepository.save(schoolClass); // Записване на промените
+    public String update(@PathVariable Long id, @RequestParam String name) {
+        TypeMark typeMark = typeMarkRepository.findById(id).orElse(null);
+        if (typeMark != null) {
+            typeMark.setName(name); // Промяна на полето name (или други полета)
+            typeMarkRepository.save(typeMark); // Записване на промените
         }
-        return "redirect:/schoolClass";
+        return "redirect:/typeMark";
     }
 
     @PostMapping("/create")
-    public String createSchoolClass(@Valid @ModelAttribute SchoolClassCreateRequest requestschoolClass,
+    public String createTypeMark(@Valid @ModelAttribute TypeMarkCreateRequest requestTypeMark,
                                 BindingResult result,
                                 RedirectAttributes redirectAttributes) {
         if (result.hasErrors()) {
             redirectAttributes.addFlashAttribute("result", new ActionResult("Има невалидно попълнени полета.", ActionResultType.ERROR));
             redirectAttributes.addFlashAttribute("errors", result);
-            redirectAttributes.addFlashAttribute("schoolClass", requestschoolClass);
+            redirectAttributes.addFlashAttribute("typeMark", requestTypeMark);
 
-            return "redirect:/schoolClass";
+            return "redirect:/typeMark";
         }
 
-        SchoolClass schoolClass = new SchoolClass();
-        schoolClass.setName(requestschoolClass.getName());
-        schoolClass.setSchool(schoolRepository.findById(requestschoolClass.getSchoolId()).orElse(null));
+        TypeMark typeMark = new TypeMark();
+        typeMark.setName(requestTypeMark.getName());
+        typeMark.setSchool(schoolRepository.findById(requestTypeMark.getSchoolId()).orElse(null));
 
-        schoolClassRepository.save(schoolClass); // Записване на промените
+        typeMarkRepository.save(typeMark); // Записване на промените
 
         redirectAttributes.addFlashAttribute("result", new ActionResult("Успешно създаване.", ActionResultType.SUCCESS));
-        return "redirect:/schoolClass";
+        return "redirect:/typeMark";
     }
 
 
@@ -95,7 +87,7 @@ public class SchoolClassController {
     RedirectView index(RedirectAttributes attributes, @PathVariable("id") Long id) {
 
         try {
-            schoolClassRepository.deleteById(id);
+            typeMarkRepository.deleteById(id);
             attributes.addFlashAttribute("result", new ActionResult("Успешно изтриване.", ActionResultType.SUCCESS));
         } catch (DataIntegrityViolationException dataIntegrityViolationException) {
             System.out.println("Съществуват свързани данни, изтриването не е възможно.");
@@ -104,7 +96,7 @@ public class SchoolClassController {
             throw new RuntimeException(e);
         }
 
-        return new RedirectView("/schoolClass");
+        return new RedirectView("/typeMark");
     }
 
 }

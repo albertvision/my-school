@@ -42,7 +42,7 @@ public class Mark { //it used to be called "Result" but it was too ambiguous
     private double value;
     @ManyToOne
     @JoinColumn(nullable = false)
-    private TypeMark markType;
+    private TypeMark typeMark;
 
     private int status; //0 - текуща, 1 - срочна, 9 - годишна
 
@@ -85,12 +85,13 @@ public class Mark { //it used to be called "Result" but it was too ambiguous
         this.value = value;
     }
 
-    public TypeMark getMarkType() {
-        return markType;
+    public TypeMark getTypeMark() {
+        return typeMark;
     }
 
-    public void setMarkType(TypeMark markType) {
-        this.markType = markType;
+    public Mark setTypeMark(TypeMark typeMark) {
+        this.typeMark = typeMark;
+        return this;
     }
 
     public int getStatus() {
