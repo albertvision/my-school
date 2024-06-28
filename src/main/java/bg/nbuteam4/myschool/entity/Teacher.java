@@ -35,6 +35,11 @@ public class Teacher {
         return name;
     }
 
+    public Teacher setSchool(School school) {
+        this.school = school;
+        return this;
+    }
+
     public void setName(String name) {
         this.name = name;
     }
