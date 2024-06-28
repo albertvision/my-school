@@ -36,7 +36,6 @@
                 <tr th:each="schoolClass : ${schoolClass}">
                     <td th:text="${schoolClass.id}"></td>
                         <td th:id="'name-'+${schoolClass.id}" th:text="${schoolClass.name}"></td>
-                    <td th:text="${schoolClass.school.name}" th:if="${school == null}"></td>
                     <td width="10">
                         <a th:id="'edit-btn-'+${schoolClass.id}" href="javascript:void(0);"
                            class="btn btn-xs btn-warning"

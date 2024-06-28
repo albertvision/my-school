@@ -44,8 +44,6 @@ public class SchoolClassController {
 
     @GetMapping
     public String index(Model model) {
-        model.addAttribute("title", "Класове");
-
 
 
         long schoolId = (long) httpSession.getAttribute("schoolId");

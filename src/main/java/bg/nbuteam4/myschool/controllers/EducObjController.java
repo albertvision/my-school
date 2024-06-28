@@ -53,36 +53,6 @@ public class EducObjController {
 
         return "educObjects/index";
     }
-//TODO change these so that the school is taken from session
-    //old
-    /* @PostMapping
-    public String find(@RequestParam Long schoolId, Model model) {
-        List<EducObj> schoolEducObjs = educObjRepository.findBySchoolId(schoolId);
-
-        School school = schoolRepository.findById(schoolId).orElse(null);
-        model.addAttribute("school", school);
-
-        model.addAttribute("educObjs", schoolEducObjs);
-        model.addAttribute("title", "Преподавани предмети");
-//        model.addAttribute("schools", schoolRepository.findAll());
-
-        return "educObjects/index";
-    }*/
-
-
-//for editing fields
-
-//    @PostMapping("/{id}/update")
-//    @ResponseBody
-//    public ResponseEntity<?> updateEducObj(@PathVariable Long id, @RequestBody EducObj newEducObj) {
-//        return educObjRepository.findById(id)
-//                .map(educObj -> {
-//                    educObj.setName(newEducObj.getName());
-//                    educObjRepository.save(educObj);
-//                    return ResponseEntity.ok().build();
-//                }).orElse(ResponseEntity.notFound().build());
-//    }
-
     @PostMapping("/{id}/update")
     public String update(@PathVariable Long id, @RequestParam String name) {
         EducObj educObj = educObjRepository.findById(id).orElse(null);
@@ -92,28 +62,6 @@ public class EducObjController {
         }
         return "redirect:/educObjects"; // Пренасочване обратно към списъка с образователни обекти
     }
-
-
-//    @PutMapping("/{id}/update")
-//    @ResponseBody
-//    public ResponseEntity<?> updateEducObj(@PathVariable Long id, @RequestBody String name) {
-//        return educObjRepository.findById(id)
-//                .map(educObj -> {
-//                    educObj.setName(name);
-//                    educObjRepository.save(educObj);
-//                    return ResponseEntity.ok().build();
-//                }).orElse(ResponseEntity.notFound().build());
-//    }
-//
-
-
-//    @GetMapping("/create")
-//    public String showCreateForm(Model model) {
-//        model.addAttribute("title", "Добавяне на нов Предмет");
-//        model.addAttribute("educObj", new EducObj());
-//        model.addAttribute("schools", schoolRepository.findAll());
-//        return "educObjects/create"; //
-//    }
 
     @PostMapping("/create")
     public String createEducObj(@Valid @ModelAttribute EducObjCreateRequest requestEducObj,

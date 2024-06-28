@@ -10,6 +10,7 @@ public interface EducObjRepository extends ListCrudRepository<EducObj, Long> {
 
  Optional<EducObj> findById(Long id);
 
+
  List<EducObj> findBySchoolId(Long schoolId);
 
 }

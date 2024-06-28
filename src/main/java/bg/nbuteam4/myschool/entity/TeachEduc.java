@@ -3,7 +3,7 @@ package bg.nbuteam4.myschool.entity;
 import jakarta.persistence.*;
 
 @Entity
-@Table(name = "TeachEduc", //a relationship table
+@Table(name = "teach_educ", //a relationship table
         uniqueConstraints = @UniqueConstraint(columnNames = {"school_id", "teacher_id", "educ_obj_id"}))
 public class TeachEduc {
 
@@ -38,5 +38,17 @@ public class TeachEduc {
 
     public EducObj getEducObj() {
         return educObj;
+    }
+
+    public void setSchool(School school) {
+        this.school = school;
+    }
+
+    public void setTeacher(Teacher teacher) {
+        this.teacher = teacher;
+    }
+
+    public void setEducObj(EducObj educObj) {
+        this.educObj = educObj;
     }
 }
