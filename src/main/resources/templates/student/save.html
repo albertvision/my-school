@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html th:replace="~{base :: layout(~{::body})}" xmlns:th="http://www.thymeleaf.org">
+
+<body>
+<div class="container">
+    <div class="page-header">
+        <h1 th:text="${title}"></h1>
+    </div>
+    <p th:if="${result} != null"
+       th:class="'alert alert-' + ${result.type().getUiClass()}"
+       th:text="${result.message()}"/>
+
+    <div class="row">
+        <div class="col-md-6">
+            <div class="panel panel-default">
+                <div class="panel-body">
+                    <form method="post">
+                        <div th:replace="~{form-group :: input('egn', 'text', 'ЕГН', ${student.getEgn()})}"> </div>
+                        <div th:replace="~{form-group :: input('first_name', 'text', 'Име', ${student.getFirstName()})}"> </div>
+                        <div th:replace="~{form-group :: input('middle_name', 'text', 'Име', ${student.getMiddleName()})}"> </div>
+                        <div th:replace="~{form-group :: input('last_name', 'text', 'Име', ${student.getLastName()})}"> </div>
+                        <div th:replace="~{form-group :: input('parentegn', 'text', 'Име', ${student.getParentEGN()})}"> </div>
+                        <div th:replace="~{form-group :: input('parent_name', 'text', 'Име', ${student.getParentName()})}"> </div>
+                        <div th:replace="~{form-group :: input('status', 'text', 'Статус', ${student.getStatus()})}"> </div>
+                        <button type="submit" class="btn btn-primary">Запиши</button>
+                        <a href="/student" class="btn btn-link">Отказ</a>
+                     <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}"/>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+</div>
+</body>
+</html>

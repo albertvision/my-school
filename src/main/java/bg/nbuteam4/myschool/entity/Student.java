@@ -27,6 +27,16 @@ public class Student {
     public Student() {
     }
 
+    public Student setEgn(String egn) {
+        this.egn = egn;
+        return this;
+    }
+
+    public Student setSchool(School school) {
+        this.school = school;
+        return this;
+    }
+
     public School getSchool() {
         return school;
     }
