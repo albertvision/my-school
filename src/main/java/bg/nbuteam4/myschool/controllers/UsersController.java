@@ -2,7 +2,7 @@ package bg.nbuteam4.myschool.controllers;
 
 import bg.nbuteam4.myschool.dto.ActionResult;
 import bg.nbuteam4.myschool.dto.ActionResultType;
-import bg.nbuteam4.myschool.dto.UserCreateRequest;
+import bg.nbuteam4.myschool.dto.UserSaveRequest;
 import bg.nbuteam4.myschool.entity.Role;
 import bg.nbuteam4.myschool.entity.User;
 import bg.nbuteam4.myschool.repository.UserRepository;
@@ -52,8 +52,9 @@ public class UsersController {
             @PathVariable("id") Long id
     ) {
         User user = userRepository.findById(id).orElseThrow(() -> new ResponseStatusException(NOT_FOUND));
+        UserSaveRequest request = UserSaveRequest.createFromEntity(user);
 
-        model.addAttribute("user", user);
+        model.addAttribute("request", request);
 
         model.addAttribute("title", "Редактиране на потребител");
         model.addAttribute("roles", Role.values());
@@ -63,14 +64,14 @@ public class UsersController {
 
     @PostMapping("/create")
     String doCreate(
-            @Valid @ModelAttribute UserCreateRequest requestUser,
+            @Valid @ModelAttribute UserSaveRequest requestUser,
             BindingResult result,
             RedirectAttributes attributes
     ) {
         if (result.hasErrors()) {
             attributes.addFlashAttribute("result", new ActionResult("Има невалидно попълнени полета.", ActionResultType.ERROR));
             attributes.addFlashAttribute("errors", result);
-            attributes.addFlashAttribute("user", requestUser);
+            attributes.addFlashAttribute("request", requestUser);
 
             return "redirect:/users/create";
         }
@@ -93,7 +94,7 @@ public class UsersController {
     @GetMapping("/create")
     String create(Model model) {
         if (!model.containsAttribute("user")) {
-            model.addAttribute("user", new UserCreateRequest());
+            model.addAttribute("request", new UserSaveRequest());
         }
 
         model.addAttribute("title", "Нов потребител");

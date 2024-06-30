@@ -1,12 +1,13 @@
 package bg.nbuteam4.myschool.dto;
 
 import bg.nbuteam4.myschool.entity.Role;
+import bg.nbuteam4.myschool.entity.User;
 import bg.nbuteam4.myschool.validation.PersonalCode;
 import bg.nbuteam4.myschool.validation.ValidEnum;
 import jakarta.validation.constraints.NotEmpty;
 import org.hibernate.validator.constraints.Length;
 
-public class UserCreateRequest {
+public class UserSaveRequest {
     @NotEmpty
     @Length(min = 4, max = 32)
     private String username;
@@ -23,7 +24,7 @@ public class UserCreateRequest {
     @PersonalCode
     private String personalCode;
 
-    public UserCreateRequest() {
+    public UserSaveRequest() {
         username = "";
         password = "";
         role = "";
@@ -41,17 +42,17 @@ public class UserCreateRequest {
         return role;
     }
 
-    public UserCreateRequest setUsername(String username) {
+    public UserSaveRequest setUsername(String username) {
         this.username = username;
         return this;
     }
 
-    public UserCreateRequest setPassword(String password) {
+    public UserSaveRequest setPassword(String password) {
         this.password = password;
         return this;
     }
 
-    public UserCreateRequest setRole(String role) {
+    public UserSaveRequest setRole(String role) {
         this.role = role;
         return this;
     }
@@ -60,8 +61,16 @@ public class UserCreateRequest {
         return personalCode;
     }
 
-    public UserCreateRequest setPersonalCode(String personalCode) {
+    public UserSaveRequest setPersonalCode(String personalCode) {
         this.personalCode = personalCode;
         return this;
+    }
+
+    public static UserSaveRequest createFromEntity(User user) {
+        return new UserSaveRequest()
+                .setUsername(user.getUsername())
+                .setRole(user.getRole().name())
+                .setPassword("")
+                .setPersonalCode(user.getPersonalCode());
     }
 }
