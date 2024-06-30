@@ -1,6 +1,6 @@
 package bg.nbuteam4.myschool.dto;
 
-import bg.nbuteam4.myschool.entity.Role;
+import bg.nbuteam4.myschool.enums.Role;
 import bg.nbuteam4.myschool.entity.User;
 import bg.nbuteam4.myschool.validation.PersonalCode;
 import bg.nbuteam4.myschool.validation.ValidEnum;

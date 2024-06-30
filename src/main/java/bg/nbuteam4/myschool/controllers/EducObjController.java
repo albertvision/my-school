@@ -1,7 +1,7 @@
 package bg.nbuteam4.myschool.controllers;
 
 import bg.nbuteam4.myschool.dto.ActionResult;
-import bg.nbuteam4.myschool.dto.ActionResultType;
+import bg.nbuteam4.myschool.enums.ActionResultType;
 import bg.nbuteam4.myschool.dto.EducObjCreateRequest;
 import bg.nbuteam4.myschool.entity.*;
 import bg.nbuteam4.myschool.repository.SchoolRepository;

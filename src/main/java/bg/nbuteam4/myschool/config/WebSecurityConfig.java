@@ -1,6 +1,6 @@
 package bg.nbuteam4.myschool.config;
 
-import bg.nbuteam4.myschool.entity.Role;
+import bg.nbuteam4.myschool.enums.Role;
 import bg.nbuteam4.myschool.entity.User;
 import bg.nbuteam4.myschool.repository.UserDetailsManager;
 import bg.nbuteam4.myschool.repository.UserRepository;
@@ -12,7 +12,6 @@ import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.ProviderManager;
 import org.springframework.security.authentication.dao.DaoAuthenticationProvider;
 import org.springframework.security.config.annotation.method.configuration.EnableMethodSecurity;
-import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;

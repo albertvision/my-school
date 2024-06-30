@@ -1,4 +1,4 @@
-package bg.nbuteam4.myschool.entity;
+package bg.nbuteam4.myschool.enums;
 
 import org.springframework.security.core.GrantedAuthority;
 

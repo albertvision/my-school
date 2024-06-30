@@ -1,5 +1,6 @@
 package bg.nbuteam4.myschool.entity;
 
+import bg.nbuteam4.myschool.enums.Role;
 import jakarta.persistence.*;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;

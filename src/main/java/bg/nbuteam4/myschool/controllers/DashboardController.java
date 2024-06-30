@@ -1,7 +1,7 @@
 package bg.nbuteam4.myschool.controllers;
 
 import bg.nbuteam4.myschool.dto.ActionResult;
-import bg.nbuteam4.myschool.dto.ActionResultType;
+import bg.nbuteam4.myschool.enums.ActionResultType;
 import bg.nbuteam4.myschool.dto.GlobalFiltersRequest;
 import bg.nbuteam4.myschool.entity.School;
 import bg.nbuteam4.myschool.entity.StudyPeriod;
@@ -89,15 +89,15 @@ public class DashboardController {
             return "redirect:/";
         }
 
-        Optional<StudyPeriod> studyPeriods = studyPeriodRepository.findById(globalFiltersRequest.getStudyPeriodId());
+        Optional<StudyPeriod> studyPeriod = studyPeriodRepository.findById(globalFiltersRequest.getStudyPeriodId());
 
-        if (studyPeriods.isEmpty() || !studyPeriods.get().getSchool().getId().equals(school.get().getId())) {
+        if (studyPeriod.isEmpty() || !studyPeriod.get().getSchool().getId().equals(school.get().getId())) {
             attributes.addFlashAttribute("result", new ActionResult("Избрали сте невалиден срок.", ActionResultType.ERROR));
 
             return "redirect:/";
         }
 
-        session.setAttribute("studyPeriodId", studyPeriods.get().getId());
+        session.setAttribute("studyPeriodId", studyPeriod.get().getId());
 
         return "redirect:/";
     }

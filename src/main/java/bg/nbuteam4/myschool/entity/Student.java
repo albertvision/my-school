@@ -65,6 +65,10 @@ public class Student {
         return lastName;
     }
 
+    public String getNames() {
+        return firstName + " " + middleName + " " + lastName;
+    }
+
     public void setLastName(String lastName) {
         this.lastName = lastName;
     }

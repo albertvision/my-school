@@ -1,4 +1,4 @@
-package bg.nbuteam4.myschool.dto;
+package bg.nbuteam4.myschool.enums;
 
 public enum ActionResultType {
     SUCCESS("success"),

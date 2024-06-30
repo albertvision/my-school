@@ -1,5 +1,7 @@
 package bg.nbuteam4.myschool.entity;
 
+import bg.nbuteam4.myschool.enums.AbsenceStatus;
+import bg.nbuteam4.myschool.enums.AbsenceType;
 import jakarta.persistence.*;
 
 import java.time.LocalDate;
@@ -32,7 +34,8 @@ public class Absence {
     @JoinColumn(name = "educ_obj_id", nullable = false)
     private EducObj educObj;
     @Column(name = "absence_type", nullable = false)
-    private int absenceType;
+    @Enumerated(EnumType.STRING)
+    private AbsenceType absenceType;
     /*
     1 болест
     2 домашни причини
@@ -44,8 +47,8 @@ public class Absence {
     private Teacher teacher;
 
     private String notes;
-
-    private int status;
+    @Enumerated(EnumType.STRING)
+    private AbsenceStatus status;
     /*
     Статус:
     0 - необработено
@@ -68,28 +71,52 @@ public class Absence {
         return schoolClass;
     }
 
+    public void setStudyPeriod(StudyPeriod studyPeriod) {
+        this.studyPeriod = studyPeriod;
+    }
+
+    public void setSchoolClass(SchoolClass schoolClass) {
+        this.schoolClass = schoolClass;
+    }
+
     public int getStudentNumberInClass() {
         return studentNumberInClass;
+    }
+
+    public void setStudentNumberInClass(int studentNumberInClass) {
+        this.studentNumberInClass = studentNumberInClass;
     }
 
     public LocalDate getAbsenceDate() {
         return absenceDate;
     }
 
+    public void setAbsenceDate(LocalDate absenceDate) {
+        this.absenceDate = absenceDate;
+    }
+
     public EducObj getEducObj() {
         return educObj;
+    }
+
+    public void setEducObj(EducObj educObj) {
+        this.educObj = educObj;
+    }
+
+    public AbsenceType getAbsenceType() {
+        return absenceType;
+    }
+
+    public void setAbsenceType(AbsenceType absenceType) {
+        this.absenceType = absenceType;
     }
 
     public Teacher getTeacher() {
         return teacher;
     }
 
-    public int getAbsenceType() {
-        return absenceType;
-    }
-
-    public void setAbsenceType(int absenceType) {
-        this.absenceType = absenceType;
+    public void setTeacher(Teacher teacher) {
+        this.teacher = teacher;
     }
 
     public String getNotes() {
@@ -100,11 +127,11 @@ public class Absence {
         this.notes = notes;
     }
 
-    public int getStatus() {
+    public AbsenceStatus getStatus() {
         return status;
     }
 
-    public void setStatus(int status) {
+    public void setStatus(AbsenceStatus status) {
         this.status = status;
     }
 }
