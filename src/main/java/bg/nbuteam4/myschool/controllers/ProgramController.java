@@ -3,16 +3,19 @@ package bg.nbuteam4.myschool.controllers;
 import bg.nbuteam4.myschool.entity.Program;
 import bg.nbuteam4.myschool.entity.SchoolClass;
 import bg.nbuteam4.myschool.entity.StudyPeriod;
-
 import bg.nbuteam4.myschool.repository.ProgramRepository;
 import bg.nbuteam4.myschool.repository.SchoolClassRepository;
 import bg.nbuteam4.myschool.repository.StudyPeriodRepository;
 import jakarta.servlet.http.HttpSession;
-import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 
+import java.time.DayOfWeek;
+import java.util.Arrays;
 import java.util.List;
 
 @Controller
@@ -60,6 +63,7 @@ public class ProgramController {
         model.addAttribute("title", "Седмична програма");
         model.addAttribute("studyPeriods", studyPeriodRepository.findAll());
         model.addAttribute("schoolClasses", schoolClassRepository.findAll());
+        model.addAttribute("daysOfWeek", Arrays.stream(DayOfWeek.values()).filter(it -> it.getValue() < 6).toList());
 
 
         return "program/index";

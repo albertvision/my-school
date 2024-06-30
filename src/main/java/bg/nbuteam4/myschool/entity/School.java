@@ -14,6 +14,8 @@ public class School {
 
     private String name;
 
+    private String address;
+
     @OneToOne
     @JoinColumn(name = "principal")
     private Teacher principal;
@@ -96,5 +98,14 @@ public class School {
 
     public void setTypeMarks(Set<TypeMark> typeMarks) {
         this.typeMarks = typeMarks;
+    }
+
+    public String getAddress() {
+        return address;
+    }
+
+    public School setAddress(String address) {
+        this.address = address;
+        return this;
     }
 }

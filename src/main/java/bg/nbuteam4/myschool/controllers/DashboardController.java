@@ -101,10 +101,4 @@ public class DashboardController {
 
         return "redirect:/";
     }
-
-    @GetMapping("/schools")
-    String schools() {
-        System.out.println("Tyk sme!");
-        return "schools";
-    }
 }
