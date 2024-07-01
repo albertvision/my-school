@@ -5,20 +5,25 @@ import bg.nbuteam4.myschool.dto.StudentSaveRequest;
 import bg.nbuteam4.myschool.entity.School;
 import bg.nbuteam4.myschool.entity.Student;
 import bg.nbuteam4.myschool.enums.ActionResultType;
+import bg.nbuteam4.myschool.exception.InvalidGlobalFilterException;
 import bg.nbuteam4.myschool.repository.SchoolRepository;
 import bg.nbuteam4.myschool.repository.StudentRepository;
 import jakarta.servlet.http.HttpSession;
 import jakarta.validation.Valid;
+import org.hibernate.exception.ConstraintViolationException;
+import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
+import org.springframework.validation.FieldError;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.server.ResponseStatusException;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 import org.springframework.web.servlet.view.RedirectView;
 
 import java.util.List;
+import java.util.Optional;
 
 import static org.springframework.http.HttpStatus.NOT_FOUND;
 
@@ -53,101 +58,92 @@ public class StudentController {
         return "student/index";
     }
 
-    @GetMapping("/{egn}")
+    @GetMapping("/{id}")
     String edit(
             Model model,
-            @PathVariable("egn") String egn
+            @PathVariable("id") Long id,
+            @SessionAttribute("schoolId") Long schoolId
     ) {
-        Student student = studentRepository.findByEgn(egn).orElseThrow(() -> new ResponseStatusException(NOT_FOUND));
+        School school = schoolRepository.findById(schoolId).orElseThrow(() -> new ResponseStatusException(NOT_FOUND));
+        Student student = studentRepository.findByIdAndSchool(id, school).orElseThrow(() -> new ResponseStatusException(NOT_FOUND));
 
-        model.addAttribute("student", student);
+        StudentSaveRequest request = Optional.ofNullable((StudentSaveRequest) model.getAttribute("request"))
+                .orElse(StudentSaveRequest.createFromEntity(student));
 
-        model.addAttribute("title", "Редактиране на ученици");
-        //   model.addAttribute("roles", Role.values());
+        model.addAttribute("request", request);
+        model.addAttribute("title", "Редактиране на ученик");
 
         return "student/save";
     }
 
     // -------------------
-    @PostMapping("/edit/{egn}")
-    public String editStudent(
-            @Valid @ModelAttribute StudentSaveRequest studentCreateRequest,
-            BindingResult result,
-            RedirectAttributes attributes
-    ) {
-        if (result.hasErrors()) {
-            attributes.addFlashAttribute("result", new ActionResult("Има невалидно попълнени полета.", ActionResultType.ERROR));
-            attributes.addFlashAttribute("errors", result);
-            attributes.addFlashAttribute("student", studentCreateRequest);
-
-            return "redirect:/student/" + studentCreateRequest.getEgn();
-        }
-
-        Student student = studentRepository.findByEgn(studentCreateRequest.getEgn())
-                .orElseThrow(() -> new ResponseStatusException(NOT_FOUND));
-
-        student.setFirstName(studentCreateRequest.getFirstName());
-        student.setMiddleName(studentCreateRequest.getMiddleName());
-        student.setLastName(studentCreateRequest.getLastName());
-        student.setParentEGN(studentCreateRequest.getParentEgn());
-        student.setParentName(studentCreateRequest.getParentName());
-        student.setStatus(studentCreateRequest.getStatus());
-
-        studentRepository.save(student);
-
-        attributes.addFlashAttribute("result", new ActionResult("Успешно редактиране на ученика.", ActionResultType.SUCCESS));
-
-        return "redirect:/student";
-    }
-
-    // -------------------
-    @PostMapping("/create")
-    String doCreate(
+    @PostMapping("/save")
+    String doSave(
+            @SessionAttribute("schoolId") Optional<Long> schoolId,
             @Valid @ModelAttribute StudentSaveRequest saveRequest,
             BindingResult result,
             RedirectAttributes attributes
     ) {
+        School school = schoolRepository.findById(schoolId.orElse(0L))
+                .orElseThrow(() -> new InvalidGlobalFilterException("Моля, изберете валидно училище преди да продължите."));
+
+        Student student = Optional.ofNullable(saveRequest.getId())
+                .flatMap(it -> studentRepository.findByIdAndSchool(it, school))
+                .orElseGet(Student::new);
+
+        boolean isStudentNew = student.getId() == null;
+
         if (result.hasErrors()) {
             attributes.addFlashAttribute("result", new ActionResult("Има невалидно попълнени полета.", ActionResultType.ERROR));
             attributes.addFlashAttribute("errors", result);
-            attributes.addFlashAttribute("student", saveRequest);
+            attributes.addFlashAttribute("request", saveRequest);
 
-            return "redirect:/student/create";
+            return "redirect:/student/" + (isStudentNew ? "create" : student.getId());
         }
 
-        Student student = new Student();
-        student.setEgn(saveRequest.getEgn());
-        student.setFirstName(saveRequest.getFirstName());
-        student.setMiddleName(saveRequest.getMiddleName());
-        student.setLastName(saveRequest.getLastName());
-        student.setParentEGN(saveRequest.getParentEgn());
-        student.setParentName(saveRequest.getParentName());
-        student.setStatus(saveRequest.getStatus());
+        student = saveRequest.toEntity(student);
+        student.setSchool(school);
 
-        studentRepository.save(student);
+        try {
+            studentRepository.save(student);
+        } catch (DataIntegrityViolationException exception) {
+            if (exception.getCause() instanceof ConstraintViolationException && ((ConstraintViolationException) exception.getCause()).getConstraintName().equals("student.unique_student_egn_per_school")) {
+                result.addError(new FieldError("studentCreateRequest", "egn", "Вече има друг ученик с този ЕГН в това училище."));
 
-        attributes.addFlashAttribute("result", new ActionResult("Успешно създаване на ученик.", ActionResultType.SUCCESS));
-        return "redirect:/student";
+                attributes.addFlashAttribute("result", new ActionResult("Има невалидно попълнени полета.", ActionResultType.ERROR));
+                attributes.addFlashAttribute("errors", result);
+                attributes.addFlashAttribute("request", saveRequest);
+
+                return "redirect:/student/" + (isStudentNew ? "create" : student.getId());
+            }
+        }
+
+        attributes.addFlashAttribute("result", new ActionResult("Успешно записване.", ActionResultType.SUCCESS));
+        return "redirect:/student/" + student.getId();
     }
 
 
     @GetMapping("/create")
     String create(Model model) {
-        if (!model.containsAttribute("student")) {
-            model.addAttribute("student", new Student());
+        if (!model.containsAttribute("request")) {
+            model.addAttribute("request", new StudentSaveRequest().setStatus(true));
         }
 
         model.addAttribute("title", "Нов ученик");
-//
+
         return "student/save";
     }
 
-    @PostMapping("/{egn}/delete")
+    @PostMapping("/{id}/delete")
     RedirectView deleteStudent(
             RedirectAttributes attributes,
-            @PathVariable("egn") String egn
+            @PathVariable("id") Long id,
+            @SessionAttribute("schoolId") Long schoolId
     ) {
-        studentRepository.deleteByEgn(egn);
+        School school = schoolRepository.findById(schoolId).orElseThrow(() -> new ResponseStatusException(NOT_FOUND));
+
+        studentRepository.deleteByIdAndSchool(id, school);
+
         attributes.addFlashAttribute("result", new ActionResult("Успешно изтриване.", ActionResultType.SUCCESS));
         return new RedirectView("/student");
     }

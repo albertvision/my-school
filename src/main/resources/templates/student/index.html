@@ -36,11 +36,15 @@
                     <td th:text="${student.firstName}"></td>
                     <td th:text="${student.middleName}"></td>
                     <td th:text="${student.lastName}"></td>
-                    <td th:text="${student.parentEGN}"></td>
+                    <td th:text="${student.parentEgn}"></td>
                     <td th:text="${student.parentName}"></td>
-                    <td th:text="${student.status}"></td>
+                    <td>
+                        <span class="badge bg-succcess">
+                            [[${student.getStatus() == 1 ? 'Активен' : 'Неактивен'}]]
+                        </span>
+                    </td>
                     <td width="10">
-                        <a th:href="'/student/' + ${student.egn}"
+                        <a th:href="'/student/' + ${student.getId()}"
                            class="btn btn-xs btn-warning"
                            data-toggle="tooltip"
                            title="Редактиране">
@@ -48,7 +52,7 @@
                         </a>
                     </td>
                     <td width="10">
-                        <form th:action="'/student/' + ${student.egn} + '/delete'" method="post">
+                        <form th:action="'/student/' + ${student.getId()} + '/delete'" method="post">
                             <input type="hidden" name="_csrf" th:value="${_csrf.token}"/>
                             <button type="submit" class="btn btn-xs btn-danger js-confirm" data-toggle="tooltip" title="Изтриване">
                                 <i class="glyphicon glyphicon-remove"></i>

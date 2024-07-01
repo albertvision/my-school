@@ -14,22 +14,23 @@
         <div class="col-md-6">
             <div class="panel panel-default">
                 <div class="panel-body">
-                    <form method="post">
-                        <div th:replace="~{form-group :: field('egn', 'text', 'ЕГН', ${student.getEgn()})}"></div>
-                        <div th:replace="~{form-group :: field('first_name', 'text', 'Име', ${student.getFirstName()})}"></div>
-                        <div th:replace="~{form-group :: field('middle_name', 'text', 'Име', ${student.getMiddleName()})}"></div>
-                        <div th:replace="~{form-group :: field('last_name', 'text', 'Име', ${student.getLastName()})}"></div>
-                        <div th:replace="~{form-group :: field('parentegn', 'text', 'Име', ${student.getParentEGN()})}"></div>
-                        <div th:replace="~{form-group :: field('parent_name', 'text', 'Име', ${student.getParentName()})}"></div>
-                        <div th:replace="~{form-group :: field('status', 'text', 'Статус', ${student.getStatus()})}"></div>
+                    <form th:action="@{/student/save}" method="post" th:object="${request}">
+                        <input type="hidden" th:field="*{id}"/>
+                        <div th:replace="~{form-group :: field('egn', 'text', 'ЕГН', *{getEgn()})}"></div>
+                        <div th:replace="~{form-group :: field('firstName', 'text', 'Име', *{getFirstName()})}"></div>
+                        <div th:replace="~{form-group :: field('middleName', 'text', 'Презиме',*{getMiddleName()})}"></div>
+                        <div th:replace="~{form-group :: field('lastName', 'text', 'Фамилия', *{getLastName()})}"></div>
+                        <div th:replace="~{form-group :: field('parentEgn', 'text', 'ЕГН родител', *{getParentEgn()})}"></div>
+                        <div th:replace="~{form-group :: field('parentName', 'text', 'Имена на родител', *{getParentName()})}"></div>
+                        <div th:replace="~{form-group :: checkbox('status', 'Активен', 1, ${request.getStatus() == true})}"></div>
                         <button type="submit" class="btn btn-primary">Запиши</button>
                         <a href="/student" class="btn btn-link">Отказ</a>
-                     <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}"/>
-                </form>
+                        <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}"/>
+                    </form>
+                </div>
             </div>
         </div>
     </div>
-</div>
 </div>
 </body>
 </html>

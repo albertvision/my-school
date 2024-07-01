@@ -1,9 +1,12 @@
 package bg.nbuteam4.myschool.dto;
 
+import bg.nbuteam4.myschool.entity.Student;
 import jakarta.validation.constraints.NotEmpty;
 import org.hibernate.validator.constraints.Length;
 
 public class StudentSaveRequest {
+    private Long id;
+
     @NotEmpty
     @Length(min = 10, max = 10)
     private String egn;
@@ -24,20 +27,9 @@ public class StudentSaveRequest {
     @NotEmpty
     private String parentName;
 
-    private int status;
+    private boolean status;
 
-
-    public StudentSaveRequest() {
-        egn = "";
-        firstName = "";
-        middleName = "";
-        lastName = "";
-        parentEgn = "";
-        parentName = "";
-        status = 0;
-    }
-
-    public @NotEmpty @Length(min = 10, max = 10) String getEgn() {
+    public String getEgn() {
         return egn;
     }
 
@@ -46,57 +38,90 @@ public class StudentSaveRequest {
         return this;
     }
 
-    public @NotEmpty String getFirstName() {
+    public String getFirstName() {
         return firstName;
     }
 
-    public StudentSaveRequest setFirstName(@NotEmpty String firstName) {
+    public StudentSaveRequest setFirstName(String firstName) {
         this.firstName = firstName;
         return this;
     }
 
-    public @NotEmpty String getMiddleName() {
+    public String getMiddleName() {
         return middleName;
     }
 
-    public StudentSaveRequest setMiddleName(@NotEmpty String middleName) {
+    public StudentSaveRequest setMiddleName(String middleName) {
         this.middleName = middleName;
         return this;
     }
 
-    public @NotEmpty String getLastName() {
+    public String getLastName() {
         return lastName;
     }
 
-    public StudentSaveRequest setLastName(@NotEmpty String lastName) {
+    public StudentSaveRequest setLastName(String lastName) {
         this.lastName = lastName;
         return this;
     }
 
-    public @NotEmpty @Length(min = 10, max = 10) String getParentEgn() {
+    public String getParentEgn() {
         return parentEgn;
     }
 
-    public StudentSaveRequest setParentEgn(@NotEmpty @Length(min = 10, max = 10) String parentEgn) {
+    public StudentSaveRequest setParentEgn(String parentEgn) {
         this.parentEgn = parentEgn;
         return this;
     }
 
-    public @NotEmpty String getParentName() {
+    public String getParentName() {
         return parentName;
     }
 
-    public StudentSaveRequest setParentName(@NotEmpty String parentName) {
+    public StudentSaveRequest setParentName(String parentName) {
         this.parentName = parentName;
         return this;
     }
 
-    public int getStatus() {
+    public boolean getStatus() {
         return status;
     }
 
-    public StudentSaveRequest setStatus(int status) {
+    public StudentSaveRequest setStatus(boolean status) {
         this.status = status;
+        return this;
+    }
+
+    public Student toEntity(Student student) {
+        student.setEgn(getEgn());
+        student.setFirstName(getFirstName());
+        student.setMiddleName(getMiddleName());
+        student.setLastName(getLastName());
+        student.setParentEgn(getParentEgn());
+        student.setParentName(getParentName());
+        student.setStatus(getStatus() ? 1 : 0); // todo
+
+        return student;
+    }
+
+    public static StudentSaveRequest createFromEntity(Student student) {
+        return new StudentSaveRequest()
+                .setId(student.getId())
+                .setEgn(student.getEgn())
+                .setFirstName(student.getFirstName())
+                .setMiddleName(student.getMiddleName())
+                .setLastName(student.getLastName())
+                .setParentEgn(student.getParentEgn())
+                .setParentName(student.getParentName())
+                .setStatus(student.getStatus() == 1);
+    }
+
+    public Long getId() {
+        return id;
+    }
+
+    public StudentSaveRequest setId(Long id) {
+        this.id = id;
         return this;
     }
 }

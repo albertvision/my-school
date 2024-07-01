@@ -20,7 +20,7 @@ public class ClassStudent {
     private SchoolClass schoolClass;
 
     @ManyToOne //the following year the same student will have a different number
-    @JoinColumn(name = "student_EGN", nullable = false)
+    @JoinColumn(name = "student_id", nullable = false)
     private Student student;
 
     @Column(nullable = false)
