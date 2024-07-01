@@ -15,27 +15,23 @@
        th:class="'alert alert-' + ${result.type().getUiClass()}"
        th:text="${result.message()}"/>
 
-     <br th:if="${school == null}">
-    <!-- Display selected school name -->
-    <div class="container mt-3" th:if="${school != null}">
-        <h2 class="font-weight-bold" th:text="${school.name}"></h2>
-    </div>
-
     <!-- Table displaying schoolclass objects -->
     <div th:if="${school != null}" class="panel panel-default">
         <div class="table-responsive">
             <table id="schoolClassTable" th:if="${school != null}" class="table table-bordered table-hover table-striped">
                 <thead>
                 <tr>
-                    <th>#</th>
+                    <th width="10">#</th>
                     <th>Клас</th>
+                    <th>Средна оценка</th>
                     <th colspan="2">Действия</th>
                 </tr>
                 </thead>
                 <tbody id="schoolClassTableBody">
                 <tr th:each="schoolClass : ${schoolClass}">
                     <td th:text="${schoolClass.id}"></td>
-                        <td th:id="'name-'+${schoolClass.id}" th:text="${schoolClass.name}"></td>
+                    <td th:id="'name-'+${schoolClass.id}" th:text="${schoolClass.name}"></td>
+                    <td th:text="${averageSchoolClassMarks.get(schoolClass.getId()) ?: '-'}"></td>
                     <td width="10">
                         <a th:id="'edit-btn-'+${schoolClass.id}" href="javascript:void(0);"
                            class="btn btn-xs btn-warning"

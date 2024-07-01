@@ -5,6 +5,7 @@ import bg.nbuteam4.myschool.dto.SchoolClassCreateRequest;
 import bg.nbuteam4.myschool.entity.School;
 import bg.nbuteam4.myschool.entity.SchoolClass;
 import bg.nbuteam4.myschool.enums.ActionResultType;
+import bg.nbuteam4.myschool.repository.MarkRepository;
 import bg.nbuteam4.myschool.repository.SchoolClassRepository;
 import bg.nbuteam4.myschool.repository.SchoolRepository;
 import jakarta.servlet.http.HttpSession;
@@ -19,6 +20,9 @@ import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 import org.springframework.web.servlet.view.RedirectView;
 
 import java.util.List;
+import java.util.Map;
+import java.util.Optional;
+import java.util.stream.Collectors;
 
 @Controller
 @RequestMapping("/schoolClass")
@@ -29,19 +33,24 @@ public class SchoolClassController {
     private final SessionProperties sessionProperties;
     private final HttpSession httpSession;
     private final DashboardController dashboardController;
+    private final MarkRepository markRepository;
 
 
-    public SchoolClassController(SchoolClassRepository schoolClassRepository, SchoolRepository schoolRepository, SessionProperties sessionProperties, HttpSession httpSession, DashboardController dashboardController) {
+    public SchoolClassController(SchoolClassRepository schoolClassRepository, SchoolRepository schoolRepository, SessionProperties sessionProperties, HttpSession httpSession, DashboardController dashboardController, MarkRepository markRepository) {
         this.schoolClassRepository = schoolClassRepository;
         this.schoolRepository = schoolRepository;
         this.sessionProperties = sessionProperties;
         this.httpSession = httpSession;
         this.dashboardController = dashboardController;
+        this.markRepository = markRepository;
     }
 
 
     @GetMapping
-    public String index(Model model) {
+    public String index(
+            Model model,
+            @SessionAttribute(value = "studyPeriodId", required = false) Optional<Long> studyPeriodId
+    ) {
         long schoolId = (long) httpSession.getAttribute("schoolId");
 
         School school = schoolRepository.findById(schoolId).orElse(null);
@@ -50,9 +59,20 @@ public class SchoolClassController {
                 .sorted()
                 .toList();
 
+        Map<Long, String> averageSchoolClassMarks = studyPeriodId
+                .map(markRepository::findAverageSchoolClassMarksBySchoolPeriodId)
+                .orElseGet(markRepository::findAverageSchoolClassMarks)
+                .stream()
+                .collect(Collectors.toMap(
+                        it -> it.getSchoolClass().getId(),
+                        it -> Optional.ofNullable(it.getAverageMark()).map(mark -> String.format("%.2f", mark)).orElse("-")
+                ));
 
+        model.addAttribute("title", "Класове");
         model.addAttribute("school", school);
         model.addAttribute("schoolClass", schoolschoolClass);
+        model.addAttribute("averageSchoolClassMarks", averageSchoolClassMarks);
+
         return "schoolClass/index";
     }
 

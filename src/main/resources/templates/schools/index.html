@@ -32,7 +32,7 @@
                     <td th:text="${entity.getAddress()}"></td>
                     <td th:text="${entity.getPrincipal()?.getName()}"></td>
                     <td>
-                        [[${averageSchoolMarks.get(entity.getId())}]]
+                        [[${averageSchoolMarks.get(entity.getId()) ?: '-'}]]
                     </td>
                     <td width="10">
                         <a th:href="'/schools/' + ${entity.getId()}"
