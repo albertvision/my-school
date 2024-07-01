@@ -1,11 +1,12 @@
 package bg.nbuteam4.myschool.controllers;
 
 import bg.nbuteam4.myschool.dto.ActionResult;
-import bg.nbuteam4.myschool.enums.ActionResultType;
 import bg.nbuteam4.myschool.dto.EducObjCreateRequest;
-import bg.nbuteam4.myschool.entity.*;
-import bg.nbuteam4.myschool.repository.SchoolRepository;
+import bg.nbuteam4.myschool.entity.EducObj;
+import bg.nbuteam4.myschool.entity.School;
+import bg.nbuteam4.myschool.enums.ActionResultType;
 import bg.nbuteam4.myschool.repository.EducObjRepository;
+import bg.nbuteam4.myschool.repository.SchoolRepository;
 import jakarta.servlet.http.HttpSession;
 import jakarta.validation.Valid;
 import org.springframework.dao.DataIntegrityViolationException;
@@ -45,11 +46,8 @@ public class EducObjController {
         List<EducObj> schoolEducObjs = educObjRepository.findBySchoolId(schoolId);
 
         model.addAttribute("school", school);
-
         model.addAttribute("educObjs", schoolEducObjs);
         model.addAttribute("title", "Преподавани предмети");
-//        model.addAttribute("schools", schoolRepository.findAll());
-
 
         return "educObjects/index";
     }

@@ -8,36 +8,15 @@
     <div class="page-header">
         <h1 th:text="${title}"></h1>
         <p>
-            <a href="javascript:void(0);" id="addNewEducObjButton" class="btn btn-primary btn-sm" onclick="addNewRow()">Добавяне на нов</a>
+            <a href="javascript:void(0);" id="addNewEducObjButton" class="btn btn-primary btn-sm" onclick="addNewRow()">Добавяне
+                на нов</a>
         </p>
     </div>
     <p th:if="${result} != null"
        th:class="'alert alert-' + ${result.type().getUiClass()}"
        th:text="${result.message()}"/>
 
-<!--    this goes to the dashboard for one selection at the start for the user-->
-
-   <!-- &lt;!&ndash; Dropdown menu to select School &ndash;&gt;
-    <form th:action="@{/educObjects}" method="post">
-        <div class="form-group">
-            <label for="schoolId">Избери училище</label>
-            <select id="schoolId" name="schoolId" class="form-control" required>
-                <option value="">Избери...</option>
-                <option th:each="school : ${schools}" th:value="${school.id}"
-                        th:text="${school.id + ' - ' + school.name}"></option>
-            </select>
-        </div>
-        <button type="submit" class="btn btn-primary">Филтрирай</button>
-    </form>-->
-
-    <br th:if="${school == null}">
-    <!-- Display selected school name -->
-    <div class="container mt-3" th:if="${school != null}">
-        <h2 class="font-weight-bold" th:text="${school.name}"></h2>
-    </div>
-
-    <!-- Table displaying educational objects -->
-    <div  th:if="${school != null}" class="panel panel-default">
+    <div th:if="${school != null}" class="panel panel-default">
         <div class="table-responsive">
             <table id="educObjsTable" th:if="${school != null}" class="table table-bordered table-hover table-striped">
                 <thead>
@@ -50,8 +29,7 @@
                 <tbody id="educObjsTableBody">
                 <tr th:each="educObj : ${educObjs}">
                     <td th:text="${educObj.id}"></td>
-                        <td th:id="'name-'+${educObj.id}" th:text="${educObj.name}"></td>
-                    <td th:text="${educObj.school.name}" th:if="${school == null}"></td>
+                    <td th:id="'name-'+${educObj.id}" th:text="${educObj.name}"></td>
                     <td width="10">
                         <a th:id="'edit-btn-'+${educObj.id}" href="javascript:void(0);"
                            class="btn btn-xs btn-warning"
@@ -60,15 +38,16 @@
                            title="Редактиране">
                             <i class="glyphicon glyphicon-pencil"></i>
                         </a>
-                        <form  th:id="${educObj.id}+'-form-edit'" th:action="@{'/educObjects/' + ${educObj.id} + '/update'}" method="post">
-                        <a th:id="'save-btn-'+${educObj.id}" href="javascript:void(0);"
-                           class="btn btn-xs btn-success"
-                           th:onclick="'saveEdit(' + ${educObj.id} + ')'"
-                           data-toggle="tooltip"
-                           title="Запазване"
-                           style="display: none;">
-                            <i class="glyphicon glyphicon-ok"></i>
-                        </a>
+                        <form th:id="${educObj.id}+'-form-edit'"
+                              th:action="@{'/educObjects/' + ${educObj.id} + '/update'}" method="post">
+                            <a th:id="'save-btn-'+${educObj.id}" href="javascript:void(0);"
+                               class="btn btn-xs btn-success"
+                               th:onclick="'saveEdit(' + ${educObj.id} + ')'"
+                               data-toggle="tooltip"
+                               title="Запазване"
+                               style="display: none;">
+                                <i class="glyphicon glyphicon-ok"></i>
+                            </a>
                         </form>
                     </td>
                     <td width="10">
@@ -83,24 +62,24 @@
                     </td>
                 </tr>
                 <tr id="newRow" style="display: none; ">
-                <td>#</td>
-                <td>
-                    <input form="new-form-create" type="text" name="name" id="new-name" class="form-control"/>
-                </td>
-                <td width="10">
-                    <form id="new-form-create" th:action="@{/educObjects/create}" method="post">
-                        <a href="javascript:void(0);" class="btn btn-xs btn-success" onclick="submitNew()">
-                            <i class="glyphicon glyphicon-ok"></i>
+                    <td>#</td>
+                    <td>
+                        <input form="new-form-create" type="text" name="name" id="new-name" class="form-control"/>
+                    </td>
+                    <td width="10">
+                        <form id="new-form-create" th:action="@{/educObjects/create}" method="post">
+                            <a href="javascript:void(0);" class="btn btn-xs btn-success" onclick="submitNew()">
+                                <i class="glyphicon glyphicon-ok"></i>
+                            </a>
+                            <input type="hidden" name="schoolId" th:value="${school.id}"/>
+                            <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}"/>
+                        </form>
+                    </td>
+                    <td width="10">
+                        <a href="javascript:void(0);" class="btn btn-xs btn-danger" onclick="discardNewRow()">
+                            <i class="glyphicon glyphicon-remove"></i>
                         </a>
-                        <input type="hidden" name="schoolId" th:value="${school.id}"/>
-                        <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}"/>
-                    </form>
-                </td>
-                <td width="10">
-                    <a href="javascript:void(0);" class="btn btn-xs btn-danger" onclick="discardNewRow()">
-                        <i class="glyphicon glyphicon-remove"></i>
-                    </a>
-                </td>
+                    </td>
                 </tr>
                 </tbody>
             </table>
