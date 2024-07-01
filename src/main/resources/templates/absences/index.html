@@ -69,7 +69,7 @@
                             th:text="${absence.studentNumberInClass   + ' - ' + absence.studentNames}"></td>
                         <td th:id="'absenceDate-'+${absence.id}" th:text="${absence.absenceDate}"></td>
                         <td th:id="'educObj.name-'+${absence.id}" th:text="${absence.educObj.name}"></td>
-                        <td th:id="'absenceType-'+${absence.id}" th:text="${absence.absenceType}"></td>
+                        <td th:id="'absenceType-'+${absence.id}" th:text="${absence.absenceType.getLabel()}"></td>
                         <td th:id="'status-'+${absence.id}" th:text="${absence.status}"></td>
                         <td th:id="'notes-'+${absence.id}" th:text="${absence.notes}"></td>
                         <td width="10">
@@ -154,7 +154,7 @@
                                         required>
                                     <option th:each="absenceType : ${absenceTypes}"
                                             th:value="${absenceType.name()}"
-                                            th:text="${absenceType.name()}"></option>
+                                            th:text="${absenceType.getLabel()}"></option>
                                 </select>
                             </label>
                         </td>

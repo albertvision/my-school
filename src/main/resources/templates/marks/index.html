@@ -65,7 +65,7 @@
                         <td th:id="'id-'+${mark.id}" th:text="${mark.id}"></td>
                         <td th:id="'studentNumberInClass-'+${mark.id}"
                             th:text="${mark.studentNumberInClass   + ' - ' + mark.studentNames}"></td>
-                        <td th:id="'markDateTime-'+${mark.id}" th:text="${mark.dateTime}"></td>
+                        <td th:id="'markDateTime-'+${mark.id}" th:text="${mark.dateTimeFormatted}"></td>
                         <td th:id="'educObj.name-'+${mark.id}" th:text="${mark.educObj.name}"></td>
                         <td th:id="'markValue-'+${mark.id}" th:text="${mark.value}"></td>
                         <td th:id="'typeMark-'+${mark.id}" th:text="${mark.typeMark.id + ' - ' + mark.typeMark.name}"></td>

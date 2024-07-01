@@ -1,9 +1,11 @@
 package bg.nbuteam4.myschool.dto;
 
-import bg.nbuteam4.myschool.entity.*;
+import bg.nbuteam4.myschool.entity.EducObj;
+import bg.nbuteam4.myschool.entity.TypeMark;
 import bg.nbuteam4.myschool.enums.MarkStatus;
 
 import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 
 public class MarkAndStudentNames {
 
@@ -116,6 +118,12 @@ public class MarkAndStudentNames {
 
     public LocalDateTime getDateTime() {
         return dateTime;
+    }
+
+    public String getDateTimeFormatted() {
+        LocalDateTime dt = dateTime;
+
+        return dt.format(DateTimeFormatter.ofPattern("dd.MM.yyyy HH:mm"));
     }
 
     public void setDateTime(LocalDateTime dateTime) {
