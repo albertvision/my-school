@@ -90,7 +90,7 @@ public class TeacherController {
         return "teacher/save";
     }
 
-    @GetMapping("/save")
+    @GetMapping("/create")
     public String create(
             Model model,
             @SessionAttribute("schoolId") Long schoolId
