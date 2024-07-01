@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html th:replace="~{base :: layout(~{::body})}" xmlns:th="http://www.thymeleaf.org">
+<body>
+<div class="container">
+    <div class="page-header">
+        <h1 th:text="${title}"></h1>
+    </div>
+    <p th:if="${result} != null"
+       th:class="'alert alert-' + ${result.type().getUiClass()}"
+       th:text="${result.message()}"/>
+
+    <div class="row">
+        <div class="col-md-6">
+            <div class="panel panel-default">
+                <div class="panel-body">
+                    <form method="post" th:action="@{/teacher/save}" th:object="${request}">
+                        <input type="hidden" th:field="*{id}">
+                        <div th:replace="~{form-group :: field('name', 'text', 'Име', ${request.getName()})}">
+                        </div>
+                        <div th:replace="~{form-group :: field('egn', 'text', 'ЕГН', ${request.getEgn()})}">
+                        </div>
+
+                        <div th:insert="~{form-group :: baseWithLabel(${'subjectIds'}, 'Предмети', ~{::.form-control})}">
+                            <div class="form-control" style="height: auto">
+                                <div
+                                        th:each="subject: ${subjects}"
+                                        class="checkbox">
+                                    <label>
+                                        <input type="checkbox"
+                                               th:field="*{subjectIds}"
+                                               th:value="${subject.getId()}"
+                                               th:checked="${request.getSubjectIds().contains(subject.getId())}"
+                                        >
+                                        [[${subject.getName()}]]
+                                    </label>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div th:insert="~{form-group :: checkbox('principal', 'Директор на училището', 1, *{isPrincipal()})}">
+
+                        </div>
+                        <button type="submit" class="btn btn-primary">Запиши</button>
+                        <a href="/teacher" class="btn btn-link">Отказ</a>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+</body>
+</html>

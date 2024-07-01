@@ -40,15 +40,19 @@ public class TeachEduc {
         return educObj;
     }
 
-    public void setSchool(School school) {
+    public TeachEduc setSchool(School school) {
         this.school = school;
+        return this;
     }
 
-    public void setTeacher(Teacher teacher) {
+    public TeachEduc setTeacher(Teacher teacher) {
         this.teacher = teacher;
+        return this;
     }
 
-    public void setEducObj(EducObj educObj) {
+    public TeachEduc setEducObj(EducObj educObj) {
         this.educObj = educObj;
+
+        return this;
     }
 }

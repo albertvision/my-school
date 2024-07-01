@@ -14,11 +14,11 @@
             <div class="panel panel-default">
                 <div class="panel-body">
                     <form method="post">
-                        <div th:replace="~{form-group :: input('username', 'text', 'Потребителско име', ${request.getUsername()})}">
+                        <div th:replace="~{form-group :: field('username', 'text', 'Потребителско име', ${request.getUsername()})}">
                         </div>
-                        <div th:replace="~{form-group :: input('password', 'password', 'Парола', _)}">
+                        <div th:replace="~{form-group :: field('password', 'password', 'Парола', _)}">
                         </div>
-                        <div th:replace="~{form-group :: base('role', 'Роля', ~{::#role})}">
+                        <div th:replace="~{form-group :: baseWithLabel('role', 'Роля', ~{::#role})}">
                             <select name="role" id="role" class="form-control">
                                 <option value="">Избери...</option>
                                 <option
@@ -29,7 +29,7 @@
                                 />
                             </select>
                         </div>
-                        <div th:replace="~{form-group :: input('personalCode', 'number', 'ЕГН', ${request.getPersonalCode()})}">
+                        <div th:replace="~{form-group :: field('personalCode', 'number', 'ЕГН', ${request.getPersonalCode()})}">
                         </div>
                         <button type="submit" class="btn btn-primary">Добави</button>
                         <a href="/users" class="btn btn-link">Отказ</a>

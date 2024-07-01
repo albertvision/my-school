@@ -14,9 +14,9 @@
             <div class="panel panel-default">
                 <div class="panel-body">
                     <form method="post">
-                        <div th:replace="~{form-group :: input('name', 'text', 'Име', ${request.getName()})}">
+                        <div th:replace="~{form-group :: field('name', 'text', 'Име', ${request.getName()})}">
                         </div>
-                        <div th:replace="~{form-group :: input('address', 'text', 'Адрес', ${request.getAddress()})}">
+                        <div th:replace="~{form-group :: field('address', 'text', 'Адрес', ${request.getAddress()})}">
                         </div>
                         <button type="submit" class="btn btn-primary">Добави</button>
                         <a href="/schools" class="btn btn-link">Отказ</a>

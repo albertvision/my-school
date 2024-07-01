@@ -1,7 +1,6 @@
 package bg.nbuteam4.myschool.repository;
 
 
-import bg.nbuteam4.myschool.entity.SchoolClass;
 import bg.nbuteam4.myschool.entity.Teacher;
 import org.springframework.data.repository.ListCrudRepository;
 

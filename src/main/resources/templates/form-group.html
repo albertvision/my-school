@@ -1,18 +1,29 @@
 <!DOCTYPE html>
 <html lang="bg" xmlns:th="http://www.thymeleaf.org">
-<div th:fragment="input(id, type, label, value)"
-     class="form-group"
-     th:classappend="${errors?.hasFieldErrors(id)}? 'has-error'"
+<div th:fragment="field(id, type, label, value)"
 >
-    <label th:for="${id}" th:text="${label}"></label>
-    <input th:type="${type}" th:name="${id}" th:id="${id}" th:value="${value}" class="form-control"/>
-    <p th:if="${errors?.hasFieldErrors(id)}"
-       th:text="${errors?.getFieldError(id)?.getDefaultMessage()}"
-       class="help-block"/>
-</div>
+    <div th:replace="~{:: baseWithLabel(${id}, ${label}, ~{::.form-control})}">
+        <input th:type="${type}" th:name="${id}" th:id="${id}" th:value="${value}" class="form-control"/>
+    </div>
 
-<div th:fragment="base(id, label, body)" class="form-group" th:classappend="${errors?.hasFieldErrors(id)}? 'has-error'">
-    <label th:for="${id}" th:text="${label}"></label>
+</div>
+<div th:fragment="checkbox(id, label, value, checked)">
+    <div class="checkbox">
+        <label>
+            <input type="checkbox" th:name="${id}" th:id="${id}" th:value="${value}" th:checked="${checked}"/>
+            [[${label}]]<br>
+            <small class="text-muted">Ще премахне съществуването на друг директор, ако има такъв.</small>
+        </label>
+    </div>
+</div>
+<div th:fragment="baseWithLabel(id, label, input)"
+     th:replace="~{:: base(${id}, ~{::.form-group-inner})}">
+    <div class="form-group-inner">
+        <label th:for="${id}" th:text="${label}"></label>
+        <div th:replace="${input}"></div>
+    </div>
+</div>
+<div th:fragment="base(id, body)" class="form-group" th:classappend="${errors?.hasFieldErrors(id)}? 'has-error'">
     <div th:replace="${body}"></div>
     <p th:if="${errors?.hasFieldErrors(id)}"
        th:text="${errors?.getFieldError(id)?.getDefaultMessage()}"

@@ -7,19 +7,14 @@
 <div class="container">
     <div class="page-header">
         <h1 th:text="${title}"></h1>
+        <p class="text-muted">Училище: <span th:text="${school.getName()}"></span></p>
         <p>
-            <a href="javascript:void(0);" id="addNewTeacherButton"  onclick="addNewRow()" class="btn btn-primary btn-sm">Добавяне на нов</a>
+            <a th:href="@{/teacher/create}" class="btn btn-primary btn-sm">Добавяне на нов</a>
         </p>
     </div>
     <p th:if="${result} != null"
        th:class="'alert alert-' + ${result.type().getUiClass()}"
        th:text="${result.message()}"/>
-
-     <br th:if="${school == null}">
-    <!-- Display selected school name -->
-    <div class="container mt-3" th:if="${school != null}">
-        <h2 class="font-weight-bold" th:text="${school.name}"></h2>
-    </div>
 
     <!-- Table displaying teacher objects -->
     <div th:if="${school != null}" class="panel panel-default">
@@ -36,13 +31,16 @@
                 <tbody id="teacherTableBody">
                 <tr th:each="teacher : ${teacher}">
                     <td th:text="${teacher.id}"></td>
-                    <td th:id="'name-'+${teacher.id}" th:text="${teacher.name}"></td>
+                    <td th:id="'name-'+${teacher.id}">
+                        [[${teacher.name}]]
+                        <span class="badge" th:if="${school.getPrincipal().equals(teacher)}">Директор</span>
+                    </td>
                     <td th:id="'egn-'+${teacher.id}" th:text="${teacher.egn}"></td>
                     <td th:text="${teacher.school.name}" th:if="${school == null}"></td>
                     <td width="10">
-                        <a th:id="'edit-btn-'+${teacher.id}" href="javascript:void(0);"
-                           class="btn btn-xs btn-warning"
-                           th:onclick="'enableEdit(' + ${teacher.id} + ')'"
+                        <a
+                                class="btn btn-xs btn-warning"
+                                th:href="@{/teacher/{id}(id=${teacher.getId()})}"
                            data-toggle="tooltip"
                            title="Редактиране">
                             <i class="glyphicon glyphicon-pencil"></i>

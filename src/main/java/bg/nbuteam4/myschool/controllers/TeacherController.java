@@ -1,24 +1,35 @@
 package bg.nbuteam4.myschool.controllers;
 
 import bg.nbuteam4.myschool.dto.ActionResult;
-import bg.nbuteam4.myschool.enums.ActionResultType;
-import bg.nbuteam4.myschool.dto.TeacherCreateRequest;
+import bg.nbuteam4.myschool.dto.TeacherSaveRequest;
+import bg.nbuteam4.myschool.entity.EducObj;
 import bg.nbuteam4.myschool.entity.School;
+import bg.nbuteam4.myschool.entity.TeachEduc;
 import bg.nbuteam4.myschool.entity.Teacher;
-import bg.nbuteam4.myschool.repository.TeacherRepository;
+import bg.nbuteam4.myschool.enums.ActionResultType;
+import bg.nbuteam4.myschool.repository.EducObjRepository;
 import bg.nbuteam4.myschool.repository.SchoolRepository;
+import bg.nbuteam4.myschool.repository.TeachEducRepository;
+import bg.nbuteam4.myschool.repository.TeacherRepository;
 import jakarta.servlet.http.HttpSession;
 import jakarta.validation.Valid;
-import org.springframework.boot.autoconfigure.session.SessionProperties;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
+import org.springframework.validation.FieldError;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.server.ResponseStatusException;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 import org.springframework.web.servlet.view.RedirectView;
 
 import java.util.List;
+import java.util.Map;
+import java.util.Optional;
+import java.util.function.Function;
+import java.util.stream.Collectors;
+
+import static org.springframework.http.HttpStatus.NOT_FOUND;
 
 @Controller
 @RequestMapping("/teacher")
@@ -26,66 +37,138 @@ public class TeacherController {
 
     private final TeacherRepository teacherRepository;
     private final SchoolRepository schoolRepository;
-    private final SessionProperties sessionProperties;
     private final HttpSession httpSession;
-    private final DashboardController dashboardController;
+    private final EducObjRepository educObjRepository;
+
+    private final TeachEducRepository teachEducRepository;
 
 
-    public TeacherController(TeacherRepository teacherRepository, SchoolRepository schoolRepository, SessionProperties sessionProperties, HttpSession httpSession, DashboardController dashboardController) {
+    public TeacherController(TeacherRepository teacherRepository,
+                             SchoolRepository schoolRepository,
+                             HttpSession httpSession,
+                             EducObjRepository educObjRepository,
+                             TeachEducRepository teachEducRepository
+    ) {
         this.teacherRepository = teacherRepository;
         this.schoolRepository = schoolRepository;
-        this.sessionProperties = sessionProperties;
         this.httpSession = httpSession;
-        this.dashboardController = dashboardController;
+        this.educObjRepository = educObjRepository;
+        this.teachEducRepository = teachEducRepository;
     }
 
 
     @GetMapping
     public String index(Model model) {
-
-
         long schoolId = (long) httpSession.getAttribute("schoolId");
 
         School school = schoolRepository.findById(schoolId).orElse(null);
         List<Teacher> schoolTeacher = teacherRepository.findBySchoolId(schoolId);
 
+        model.addAttribute("title", "Преподаватели");
         model.addAttribute("school", school);
         model.addAttribute("teacher", schoolTeacher);
+
         return "teacher/index";
     }
 
-    @PostMapping("/{id}/update")
-    public String update(@PathVariable Long id, @RequestParam String name, String egn, Model model) {
-        Teacher teacher = teacherRepository.findById(id).orElse(null);
-        if (teacher != null) {
-            teacher.setName(name); // Промяна на полето name (или други полета)
-            teacher.setEgn(egn);
-            teacherRepository.save(teacher); // Записване на промените
-        }
-        return "redirect:/teacher";
+    @GetMapping("/{id}")
+    public String edit(
+            @PathVariable("id") Long id,
+            @SessionAttribute("schoolId") Long schoolId,
+            Model model
+    ) {
+        School school = schoolRepository.findById(schoolId).orElseThrow(() -> new ResponseStatusException(NOT_FOUND));
+        Teacher teacher = teacherRepository.findById(id).orElseThrow(() -> new ResponseStatusException(NOT_FOUND));
+        List<TeachEduc> teacherSubjects = teachEducRepository.findBySchoolIdAndTeacherId(school.getId(), teacher.getId());
+
+        TeacherSaveRequest request = TeacherSaveRequest.create(teacher, school, teacherSubjects);
+
+        model.addAttribute("request", request);
+        model.addAttribute("title", "Редактиране на преподавател");
+        model.addAttribute("subjects", educObjRepository.findBySchoolId(school.getId()));
+
+        return "teacher/save";
     }
 
-    @PostMapping("/create")
-    public String createTeacher(@Valid @ModelAttribute TeacherCreateRequest requestteacher,
-                                    BindingResult result,
-                                    RedirectAttributes redirectAttributes) {
+    @GetMapping("/save")
+    public String create(
+            Model model,
+            @SessionAttribute("schoolId") Long schoolId
+    ) {
+        if (!model.containsAttribute("request")) {
+            model.addAttribute("request", new TeacherSaveRequest());
+        }
+
+        School school = schoolRepository.findById(schoolId).orElseThrow(() -> new ResponseStatusException(NOT_FOUND));
+        List<EducObj> educObjs = educObjRepository.findBySchoolId(school.getId());
+
+        model.addAttribute("title", "Нов преподавател");
+        model.addAttribute("subjects", educObjs);
+
+        return "teacher/save";
+    }
+
+    @PostMapping("/save")
+    public String saveTeacher(
+            @SessionAttribute("schoolId") Long schoolId,
+            @Valid @ModelAttribute TeacherSaveRequest request,
+            BindingResult result,
+            RedirectAttributes redirectAttributes
+    ) {
+        School school = schoolRepository.findById(schoolId).orElseThrow(() -> new ResponseStatusException(NOT_FOUND));
+        Map<Long, EducObj> schoolSubjects = educObjRepository.findBySchoolId(school.getId())
+                .stream()
+                .collect(Collectors.toMap(EducObj::getId, Function.identity()));
+
+        Teacher teacher = Optional.ofNullable(request.getId())
+                .flatMap(teacherRepository::findById)
+                .orElseGet(Teacher::new);
+
+        boolean isTeacherNew = teacher.getId() == null;
+
+        if (!request.getSubjectIds().stream().allMatch(schoolSubjects::containsKey)) {
+            result.addError(new FieldError("teacherCreateRequest", "subjectIds", "invalid value found"));
+        }
+
         if (result.hasErrors()) {
             redirectAttributes.addFlashAttribute("result", new ActionResult("Има невалидно попълнени полета.", ActionResultType.ERROR));
             redirectAttributes.addFlashAttribute("errors", result);
-            redirectAttributes.addFlashAttribute("teacher", requestteacher);
+            redirectAttributes.addFlashAttribute("request", request);
 
-            return "redirect:/teacher";
+            return "redirect:/teacher/" + (isTeacherNew ? "create" : "/" + teacher.getId());
         }
 
-        Teacher teacher = new Teacher();
-        teacher.setName(requestteacher.getName());
-        teacher.setEgn(requestteacher.getEgn());
-        teacher.setSchool(schoolRepository.findById(requestteacher.getSchoolId()).orElse(null));
+        teacher.setName(request.getName());
+        teacher.setEgn(request.getEgn());
+        teacher.setSchool(school);
 
-        teacherRepository.save(teacher); // Записване на промените
+        teacherRepository.save(teacher);
 
-        redirectAttributes.addFlashAttribute("result", new ActionResult("Успешно създаване.", ActionResultType.SUCCESS));
-        return "redirect:/teacher";
+        if (!isTeacherNew) {
+            // Delete all existing TeachEduc entries for the given teacher and school
+            teachEducRepository.deleteBySchoolIdAndTeacherId(school.getId(), teacher.getId());
+        }
+
+        List<TeachEduc> savedTeacherSubjects = request.getSubjectIds()
+                .stream()
+                .map(it -> new TeachEduc().setEducObj(schoolSubjects.get(it))
+                        .setTeacher(teacher)
+                        .setSchool(school)
+                )
+                .map(teachEducRepository::save)
+                .toList();
+
+        if (savedTeacherSubjects.size() != request.getSubjectIds().size()) {
+            throw new RuntimeException("Error when saving teacher subjects.");
+        }
+
+        if (request.isPrincipal()) {
+            school.setPrincipal(teacher);
+            schoolRepository.save(school);
+        }
+
+        redirectAttributes.addFlashAttribute("result", new ActionResult("Успешно записване.", ActionResultType.SUCCESS));
+        return "redirect:/teacher/" + teacher.getId();
     }
 
 
@@ -96,7 +179,6 @@ public class TeacherController {
             teacherRepository.deleteById(id);
             attributes.addFlashAttribute("result", new ActionResult("Успешно изтриване.", ActionResultType.SUCCESS));
         } catch (DataIntegrityViolationException dataIntegrityViolationException) {
-            System.out.println("Съществуват свързани данни, изтриването не е възможно.");
             attributes.addFlashAttribute("result", new ActionResult("Съществуват свързани данни, изтриването не е възможно.", ActionResultType.ERROR));
         } catch (Exception e) {
             throw new RuntimeException(e);

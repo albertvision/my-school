@@ -2,8 +2,6 @@ package bg.nbuteam4.myschool.entity;
 
 import jakarta.persistence.*;
 
-import java.util.IdentityHashMap;
-
 @Entity
 @Table(name = "teacher",
         uniqueConstraints = @UniqueConstraint(columnNames = {"id", "school_id"}))
@@ -17,6 +15,7 @@ public class Teacher {
     private School school;
 
     private String name;
+
     @Column(length = 10, nullable = false)
     private String egn;
 
