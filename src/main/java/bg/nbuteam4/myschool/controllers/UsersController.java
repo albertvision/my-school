@@ -2,10 +2,9 @@ package bg.nbuteam4.myschool.controllers;
 
 import bg.nbuteam4.myschool.dto.ActionResult;
 import bg.nbuteam4.myschool.dto.UserSaveRequest;
-import bg.nbuteam4.myschool.enums.ActionResultType;
-import bg.nbuteam4.myschool.dto.UserCreateRequest;
-import bg.nbuteam4.myschool.enums.Role;
 import bg.nbuteam4.myschool.entity.User;
+import bg.nbuteam4.myschool.enums.ActionResultType;
+import bg.nbuteam4.myschool.enums.Role;
 import bg.nbuteam4.myschool.repository.UserRepository;
 import jakarta.validation.Valid;
 import org.springframework.security.access.prepost.PreAuthorize;
