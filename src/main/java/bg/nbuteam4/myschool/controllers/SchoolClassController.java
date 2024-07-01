@@ -1,12 +1,10 @@
 package bg.nbuteam4.myschool.controllers;
 
 import bg.nbuteam4.myschool.dto.ActionResult;
-import bg.nbuteam4.myschool.enums.ActionResultType;
-
 import bg.nbuteam4.myschool.dto.SchoolClassCreateRequest;
-
 import bg.nbuteam4.myschool.entity.School;
 import bg.nbuteam4.myschool.entity.SchoolClass;
+import bg.nbuteam4.myschool.enums.ActionResultType;
 import bg.nbuteam4.myschool.repository.SchoolClassRepository;
 import bg.nbuteam4.myschool.repository.SchoolRepository;
 import jakarta.servlet.http.HttpSession;
@@ -44,12 +42,14 @@ public class SchoolClassController {
 
     @GetMapping
     public String index(Model model) {
-
-
         long schoolId = (long) httpSession.getAttribute("schoolId");
 
         School school = schoolRepository.findById(schoolId).orElse(null);
-        List<SchoolClass> schoolschoolClass = schoolClassRepository.findBySchoolId(schoolId);
+        List<SchoolClass> schoolschoolClass = schoolClassRepository.findBySchoolId(schoolId)
+                .stream()
+                .sorted()
+                .toList();
+
 
         model.addAttribute("school", school);
         model.addAttribute("schoolClass", schoolschoolClass);
