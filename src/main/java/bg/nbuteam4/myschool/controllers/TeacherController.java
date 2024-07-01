@@ -15,6 +15,7 @@ import jakarta.servlet.http.HttpSession;
 import jakarta.validation.Valid;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.stereotype.Controller;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
 import org.springframework.validation.FieldError;
@@ -162,8 +163,8 @@ public class TeacherController {
             throw new RuntimeException("Error when saving teacher subjects.");
         }
 
-        if (request.isPrincipal()) {
-            school.setPrincipal(teacher);
+        if (request.isPrincipal() || (school.getPrincipal() != null && school.getPrincipal().getId().equals(teacher.getId()))) {
+            school.setPrincipal(request.isPrincipal() ? teacher : null);
             schoolRepository.save(school);
         }
 
@@ -173,10 +174,23 @@ public class TeacherController {
 
 
     @PostMapping("/{id}/delete")
-    RedirectView index(RedirectAttributes attributes, @PathVariable("id") Long id) {
+    @Transactional
+    RedirectView index(
+            RedirectAttributes attributes,
+            @PathVariable("id") Long id,
+            @SessionAttribute("schoolId") Long schoolId
+    ) {
+        School school = schoolRepository.findById(schoolId).orElseThrow(() -> new ResponseStatusException(NOT_FOUND));
 
         try {
+            if (school.getPrincipal() != null && school.getPrincipal().getId().equals(id)) {
+                school.setPrincipal(null);
+                schoolRepository.save(school);
+            }
+
+            teachEducRepository.deleteBySchoolIdAndTeacherId(schoolId, id);
             teacherRepository.deleteById(id);
+
             attributes.addFlashAttribute("result", new ActionResult("Успешно изтриване.", ActionResultType.SUCCESS));
         } catch (DataIntegrityViolationException dataIntegrityViolationException) {
             attributes.addFlashAttribute("result", new ActionResult("Съществуват свързани данни, изтриването не е възможно.", ActionResultType.ERROR));

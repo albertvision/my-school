@@ -38,7 +38,7 @@ public class TeacherSaveRequest {
                 .setId(teacher.getId())
                 .setName(teacher.getName())
                 .setEgn(teacher.getEgn())
-                .setPrincipal(school.getPrincipal().equals(teacher))
+                .setPrincipal(school.getPrincipal() != null && school.getPrincipal().equals(teacher))
                 .setSubjectIds(teacherSubjects.stream().map(it -> it.getEducObj().getId()).toList());
     }
 
