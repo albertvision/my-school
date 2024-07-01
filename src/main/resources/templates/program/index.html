@@ -9,22 +9,16 @@
            th:text="${result.message()}"/>
 
         <!-- Form to select StudyPeriod and SchoolClass -->
-        <form th:action="@{/program}" method="post">
-            <div class="form-group">
-                <label for="studyPeriodId">Избери учебен период</label>
-                <select id="studyPeriodId" name="studyPeriodId" class="form-control" required>
-                    <option value="">Избери...</option>
-                    <option th:each="studyPeriod : ${studyPeriods}" th:value="${studyPeriod.id}"
-                            th:selected="${session.get('studyPeriodId')} == ${studyPeriod.id}"
-                            th:text="${studyPeriod.currentYear + ' ' + studyPeriod.name + ' (' + studyPeriod.currentSemester + ')'}"></option>
-                </select>
-            </div>
+        <form th:action="@{/program}">
             <div class="form-group">
                 <label for="schoolClassId">Избери клас</label>
                 <select id="schoolClassId" name="schoolClassId" class="form-control" required>
                     <option value="">Избери...</option>
-                    <option th:each="schoolClass : ${schoolClasses}" th:value="${schoolClass.id}"
-                            th:text="${schoolClass.school.name + ' - ' + schoolClass.name}"></option>
+                    <option th:each="schoolClassOption : ${schoolClasses}"
+                            th:value="${schoolClassOption.id}"
+                            th:text="${schoolClassOption.name}"
+                            th:selected="${schoolClass != null && schoolClassOption.getId().equals(schoolClass.getId())}">
+                    </option>
                 </select>
             </div>
             <button type="submit" class="btn btn-primary">Покажи програма</button>
