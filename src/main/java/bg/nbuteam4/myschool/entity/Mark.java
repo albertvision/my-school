@@ -1,5 +1,6 @@
 package bg.nbuteam4.myschool.entity;
 
+import bg.nbuteam4.myschool.enums.MarkStatus;
 import jakarta.persistence.*;
 import jakarta.validation.Constraint;
 import jakarta.validation.constraints.Max;
@@ -11,7 +12,7 @@ import java.time.LocalDateTime;
 
 @Entity
 @Table(name = "mark",
-        uniqueConstraints = @UniqueConstraint(columnNames = {"id", "study_period_id", "school_class_id", "student_number_in_class", "educ_obj_id", "teacher_id"}))
+        uniqueConstraints = @UniqueConstraint(columnNames = {"study_period_id", "school_class_id", "student_number_in_class", "educ_obj_id", "teacher_id"}))
 public class Mark { //it used to be called "Result" but it was too ambiguous
 
     @Id
@@ -44,7 +45,7 @@ public class Mark { //it used to be called "Result" but it was too ambiguous
     @JoinColumn(nullable = false)
     private TypeMark typeMark;
 
-    private int status; //0 - текуща, 1 - срочна, 9 - годишна
+    private MarkStatus status; //0 - текуща, 1 - срочна, 9 - годишна
 
     @Column(nullable = false)
     @Temporal(TemporalType.TIMESTAMP)
@@ -61,20 +62,40 @@ public class Mark { //it used to be called "Result" but it was too ambiguous
         return studyPeriod;
     }
 
+    public void setStudyPeriod(StudyPeriod studyPeriod) {
+        this.studyPeriod = studyPeriod;
+    }
+
     public SchoolClass getSchoolClass() {
         return schoolClass;
+    }
+
+    public void setSchoolClass(SchoolClass schoolClass) {
+        this.schoolClass = schoolClass;
     }
 
     public int getStudentNumberInClass() {
         return studentNumberInClass;
     }
 
+    public void setStudentNumberInClass(int studentNumberInClass) {
+        this.studentNumberInClass = studentNumberInClass;
+    }
+
     public EducObj getEducObj() {
         return educObj;
     }
 
+    public void setEducObj(EducObj educObj) {
+        this.educObj = educObj;
+    }
+
     public Teacher getTeacher() {
         return teacher;
+    }
+
+    public void setTeacher(Teacher teacher) {
+        this.teacher = teacher;
     }
 
     public double getValue() {
@@ -89,16 +110,15 @@ public class Mark { //it used to be called "Result" but it was too ambiguous
         return typeMark;
     }
 
-    public Mark setTypeMark(TypeMark typeMark) {
+    public void setTypeMark(TypeMark typeMark) {
         this.typeMark = typeMark;
-        return this;
     }
 
-    public int getStatus() {
+    public MarkStatus getStatus() {
         return status;
     }
 
-    public void setStatus(int status) {
+    public void setStatus(MarkStatus status) {
         this.status = status;
     }
 
