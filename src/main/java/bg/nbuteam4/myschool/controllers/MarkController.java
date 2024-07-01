@@ -76,6 +76,8 @@ public class MarkController {
         model.addAttribute("schoolClasses", schoolClasses);
 
         if (schoolClassId.isPresent() && teacherId.isPresent()) {
+
+
             List<ClassStudent> classStudents = classStudentRepository.findByStudyPeriodIdAndSchoolClassIdOrderByStudentNumberInClass(studyPeriodId, schoolClassId.get());
             model.addAttribute("classStudents", classStudents);
 
@@ -103,7 +105,7 @@ public class MarkController {
 
             //if the teacher is selected through the dropdown list
 //        model.addAttribute("marks", markRepository.findByStudyPeriodIdAndSchoolClassId(studyPeriodId, schoolClassId));
-            model.addAttribute("marksDTO", markRepository.findByStudyPeriodIdAndSchoolClassIdWithStudentNamesOrderByIdAsc(studyPeriodId, schoolClassId.get()));
+            model.addAttribute("marksDTO", markRepository.findByStudyPeriodIdAndSchoolClassIdAndTeacherIdWithStudentNamesOrderByIdAsc(studyPeriodId, schoolClassId.get(),teacherId.get()));
 
 //            model.addAttribute("studyPeriodId", studyPeriodId);
             model.addAttribute("selectedTeacher", teacherRepository.findById(teacherId.get()).orElse(null));
