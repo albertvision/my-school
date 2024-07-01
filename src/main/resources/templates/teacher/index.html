@@ -33,7 +33,7 @@
                     <td th:text="${teacher.id}"></td>
                     <td th:id="'name-'+${teacher.id}">
                         [[${teacher.name}]]
-                        <span class="badge" th:if="${school.getPrincipal().equals(teacher)}">Директор</span>
+                        <span class="badge" th:if="${school.getPrincipal() != null && school.getPrincipal().equals(teacher)}">Директор</span>
                     </td>
                     <td th:id="'egn-'+${teacher.id}" th:text="${teacher.egn}"></td>
                     <td th:text="${teacher.school.name}" th:if="${school == null}"></td>
