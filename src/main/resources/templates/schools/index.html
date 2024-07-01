@@ -21,6 +21,7 @@
                     <th>Име</th>
                     <th>Адрес</th>
                     <th>Директор</th>
+                    <th>Среден успех</th>
                     <th colspan="2">Действия</th>
                 </tr>
                 </thead>
@@ -30,6 +31,9 @@
                     <td th:text="${entity.getName()}"></td>
                     <td th:text="${entity.getAddress()}"></td>
                     <td th:text="${entity.getPrincipal()?.getName()}"></td>
+                    <td>
+                        [[${averageSchoolMarks.get(entity.getId())}]]
+                    </td>
                     <td width="10">
                         <a th:href="'/schools/' + ${entity.getId()}"
                            class="btn btn-xs btn-warning"

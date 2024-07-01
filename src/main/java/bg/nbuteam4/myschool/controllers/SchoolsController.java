@@ -1,9 +1,10 @@
 package bg.nbuteam4.myschool.controllers;
 
 import bg.nbuteam4.myschool.dto.ActionResult;
-import bg.nbuteam4.myschool.enums.ActionResultType;
 import bg.nbuteam4.myschool.dto.SchoolSaveRequest;
 import bg.nbuteam4.myschool.entity.School;
+import bg.nbuteam4.myschool.enums.ActionResultType;
+import bg.nbuteam4.myschool.repository.MarkRepository;
 import bg.nbuteam4.myschool.repository.SchoolRepository;
 import bg.nbuteam4.myschool.repository.TeacherRepository;
 import jakarta.validation.Valid;
@@ -17,6 +18,9 @@ import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 import org.springframework.web.servlet.view.RedirectView;
 
 import java.util.List;
+import java.util.Map;
+import java.util.Optional;
+import java.util.stream.Collectors;
 
 import static org.springframework.http.HttpStatus.NOT_FOUND;
 
@@ -26,18 +30,31 @@ import static org.springframework.http.HttpStatus.NOT_FOUND;
 public class SchoolsController {
     private final SchoolRepository schoolRepository;
     private final TeacherRepository teacherRepository;
+    private final MarkRepository markRepository;
 
-    public SchoolsController(SchoolRepository schoolRepository,
-                             TeacherRepository teacherRepository) {
+    public SchoolsController(
+            SchoolRepository schoolRepository,
+            TeacherRepository teacherRepository,
+            MarkRepository markRepository
+    ) {
         this.schoolRepository = schoolRepository;
         this.teacherRepository = teacherRepository;
+        this.markRepository = markRepository;
     }
 
     @GetMapping
     String index(Model model) {
         List<School> schools = schoolRepository.findAll();
 
+        Map<Long, String> averageSchoolMarks = markRepository.findAverageSchoolMarks()
+                .stream()
+                .collect(Collectors.toMap(
+                        it -> it.getSchool().getId(),
+                        it -> Optional.ofNullable(it.getAverageMark()).map(mark -> String.format("%.2f", mark)).orElse("-")
+                ));
+
         model.addAttribute("schools", schools);
+        model.addAttribute("averageSchoolMarks", averageSchoolMarks);
         model.addAttribute("title", "Училища");
 
         return "schools/index";
