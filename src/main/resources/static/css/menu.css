@@ -4,6 +4,9 @@
   text-transform: uppercase
 }
 
+.navbar {
+  margin-bottom: 0;
+}
 .navbar .nav {
   font-family: 'Open Sans', sans-serif;
   text-transform: uppercase;
@@ -119,4 +122,9 @@
 }
 .dropdown:hover .dropdown-menu {
   display: block;
+}
+
+#global-filters {
+  padding: 1rem 0;
+  background-color: #f3f3f3;
 }
