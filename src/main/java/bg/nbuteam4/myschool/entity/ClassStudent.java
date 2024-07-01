@@ -4,7 +4,7 @@ import jakarta.persistence.*;
 
 @Entity
 @Table(name = "class_student",
-        uniqueConstraints = @UniqueConstraint(columnNames = {"study_period_id", "school_class_id", "student_EGN", "student_number_in_class"}))
+        uniqueConstraints = @UniqueConstraint(columnNames = {"study_period_id", "school_class_id", "student_id", "student_number_in_class"}))
 public class ClassStudent {
 
     @Id

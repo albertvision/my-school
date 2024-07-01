@@ -8,7 +8,6 @@ import jakarta.persistence.*;
 public class TypeMark {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "id")
     private Long id; //could be enum as well? Primary key might not work for different schools. Can be changed to only id, school and enum columns, I guess.
     /*TypeMark
     0   Устно изпитване

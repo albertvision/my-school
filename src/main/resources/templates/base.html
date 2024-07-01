@@ -40,7 +40,7 @@
                     <a href="#">Бележник</a>
                 </li>
                 <li>
-                    <a href="#">Отсъствия</a>
+                    <a href="absences">Отсъствия</a>
                 </li>
                 <li>
                     <a href="#">Справки</a>
@@ -54,6 +54,29 @@
         </nav>
     </div>
 </header>
+<div id="global-filters">
+    <div class="container">
+        <form th:action="@{/set-global-filters}" method="post" class="form-inline">
+            <div class="form-group form-group-sm">
+                <select id="schoolId" name="schoolId" class="form-control mr-3">
+                    <option value="">Избери...</option>
+                    <option th:each="school : ${schools}" th:value="${school.id}"
+                            th:selected="${session.get('schoolId')} == ${school.id}"
+                            th:text="${school.id + ' - ' + school.name}"></option>
+                </select>
+            </div>
+            <div th:if="${studyPeriods != null}" class="form-group form-group-sm" id="js-study-period-group">
+                <select id="studyPeriodId" name="studyPeriodId" class="form-control">
+                    <option value="">Избери...</option>
+                    <option th:each="studyPeriod : ${studyPeriods}" th:value="${studyPeriod.id}"
+                            th:selected="${session.get('studyPeriodId')} == ${studyPeriod.id}"
+                            th:text="${studyPeriod.currentYear + ' ' + studyPeriod.name + ' (' + studyPeriod.currentSemester + ')'}"></option>
+                </select>
+            </div>
+            <button type="submit" class="btn btn-default btn-sm">Избери</button>
+        </form>
+    </div>
+</div>
 <div class="container" th:replace="${body}">
     <h1 th:text="${title}"></h1>
 </div>

@@ -22,13 +22,6 @@ public class TeacherSaveRequest {
 
     private List<Long> subjectIds = new ArrayList<>();
 
-
-    public TeacherSaveRequest() {
-        name = "";
-        egn = "";
-        principal = false;
-    }
-
     public static TeacherSaveRequest create(
             Teacher teacher,
             School school,

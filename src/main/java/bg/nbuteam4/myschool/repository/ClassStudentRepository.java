@@ -13,5 +13,7 @@ public interface ClassStudentRepository extends ListCrudRepository<ClassStudent,
     Optional<ClassStudent> findById(Long id);
 
     List<ClassStudent> findByStudyPeriodIdAndSchoolClassId(Long studyPeriodId, Long schoolClassId);
+    List<ClassStudent> findByStudyPeriodIdAndSchoolClassIdOrderByStudentNumberInClass(Long studyPeriodId, Long schoolClassId);
+
     Optional<ClassStudent> findByStudyPeriodIdAndSchoolClassIdAndStudentNumberInClass(Long studyPeriodId, Long schoolClassId, int studentNumberInClass);
 }
