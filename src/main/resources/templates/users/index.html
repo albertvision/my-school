@@ -29,7 +29,7 @@
                     <td th:text="${user.getId()}"></td>
                     <td th:text="${user.getUsername()}"></td>
                     <td th:text="${user.getPersonalCode()}"></td>
-                    <td th:text="${user.getRole().name()}"></td>
+                    <td th:text="${user.getRole().getLabel()}"></td>
                     <td width="10">
                         <a th:href="'/users/' + ${user.getId()}"
                            class="btn btn-xs btn-warning"
