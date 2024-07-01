@@ -6,6 +6,7 @@ import bg.nbuteam4.myschool.entity.*;
 import bg.nbuteam4.myschool.enums.AbsenceStatus;
 import bg.nbuteam4.myschool.enums.AbsenceType;
 import bg.nbuteam4.myschool.enums.ActionResultType;
+import bg.nbuteam4.myschool.exception.InvalidGlobalFilterException;
 import bg.nbuteam4.myschool.repository.*;
 import jakarta.servlet.http.HttpSession;
 import jakarta.validation.Valid;
@@ -17,6 +18,7 @@ import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import java.util.LinkedHashSet;
 import java.util.List;
+import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
 
@@ -29,13 +31,14 @@ public class AbsencesController {
     private final EducObjRepository educObjRepository;
     private final TeachEducRepository teachEducRepository;
     private final ClassStudentRepository classStudentRepository;
-    private final HttpSession httpSession;
+    //    private final HttpSession httpSession;
     private final StudyPeriodRepository studyPeriodRepository;
     private final SchoolClassEducObjRepository schoolClassEducObjRepository;
     private final SchoolClassRepository schoolClassRepository;
     private final AbsenceRepository absenceRepository;
 
-    public AbsencesController(SchoolRepository schoolRepository, TeacherRepository teacherRepository, EducObjRepository educObjRepository, TeachEducRepository teachEducRepository, ClassStudentRepository classStudentRepository, HttpSession httpSession,
+    public AbsencesController(SchoolRepository schoolRepository, TeacherRepository teacherRepository, EducObjRepository educObjRepository, TeachEducRepository teachEducRepository, ClassStudentRepository classStudentRepository,
+//                              HttpSession httpSession,
                               StudyPeriodRepository studyPeriodRepository,
                               SchoolClassEducObjRepository schoolClassEducObjRepository,
                               SchoolClassRepository schoolClassRepository, AbsenceRepository absenceRepository) {
@@ -44,7 +47,7 @@ public class AbsencesController {
         this.educObjRepository = educObjRepository;
         this.teachEducRepository = teachEducRepository;
         this.classStudentRepository = classStudentRepository;
-        this.httpSession = httpSession;
+//        this.httpSession = httpSession;
         this.studyPeriodRepository = studyPeriodRepository;
         this.schoolClassEducObjRepository = schoolClassEducObjRepository;
         this.schoolClassRepository = schoolClassRepository;
@@ -52,26 +55,20 @@ public class AbsencesController {
     }
 
     @GetMapping
-    public String index(Model model) {
+    public String index(Model model,
+                        @SessionAttribute("schoolId") Long schoolId,
+                        @SessionAttribute("studyPeriodId") Long studyPeriodId,
+                        @RequestParam("schoolClassId") Optional<Long> schoolClassId,
+                        @RequestParam("teacherId") Optional<Long> teacherId,
+                        RedirectAttributes redirectAttributes) {
 
         model.addAttribute("title", "Отсъствия");
 
-        long schoolId = (long) httpSession.getAttribute("schoolId");
-        long studyPeriodId = (long) httpSession.getAttribute("studyPeriodId");
-        long sessionTeacherId = 0L;//(long) httpSession.("teacherId"); //find teacher from seesion user - if user isTeacher
+        List<Teacher> teachers = teacherRepository.findAll();
 
-        Teacher teacher = null;
-        List<Teacher> teachers = null;
-        if (sessionTeacherId != 0) {
-            teacher = teacherRepository.findById(sessionTeacherId).orElse(null);
-            model.addAttribute("teacher", teacher);
-        } else {
-            teachers = teacherRepository.findAll();
-            model.addAttribute("teachers", teachers);
-        }
 
-        School school = schoolRepository.findById(schoolId).orElse(null);
-        StudyPeriod studyPeriod = studyPeriodRepository.findById(studyPeriodId).orElse(null);
+        School school = schoolRepository.findById(schoolId).orElseThrow(() -> new InvalidGlobalFilterException("Невалидно училище."));
+        StudyPeriod studyPeriod = studyPeriodRepository.findById(studyPeriodId).orElseThrow(() -> new InvalidGlobalFilterException("Невалиден срок."));
 
 
         List<SchoolClass> schoolClasses = schoolClassRepository.findBySchoolId(schoolId);
@@ -80,92 +77,63 @@ public class AbsencesController {
         model.addAttribute("teachers", teachers);
         model.addAttribute("schoolClasses", schoolClasses);
 
-        return "absences/index";
-    }
+        if (schoolClassId.isPresent() && teacherId.isPresent()) {
+            List<ClassStudent> classStudents = classStudentRepository.findByStudyPeriodIdAndSchoolClassIdOrderByStudentNumberInClass(studyPeriodId, schoolClassId.get());
+            model.addAttribute("classStudents", classStudents);
 
-    @PostMapping
-    public String setTeacherAndClass(@RequestParam Long requestTeacherId, @RequestParam Long schoolClassId, Model model) {
+            Set<EducObj> teacherEducObjs = teachEducRepository.findBySchoolIdAndTeacherId(schoolId, teacherId.get())
+                    .stream()
+                    .map(TeachEduc::getEducObj)
+                    .collect(Collectors.toSet());
 
-        model.addAttribute("title", "Отсъствия");
+            // Fetch educObjs associated with the school class and study period
+            Set<EducObj> classEducObjs = schoolClassEducObjRepository.findByStudyPeriodIdAndSchoolClassId(studyPeriodId, schoolClassId.get())
+                    .stream()
+                    .map(SchoolClassEducObj::getEducObj)
+                    .collect(Collectors.toSet());
 
-        long schoolId = (long) httpSession.getAttribute("schoolId");
-        long studyPeriodId = (long) httpSession.getAttribute("studyPeriodId");
-        long sessionTeacherId = 0L;//(long) httpSession.getAttribute("teacherId"); //find teacher from seesion user - if user isTeacher
-        //TODO make this from session rather than 0L
-        School school = schoolRepository.findById(schoolId).orElse(null);
+            // Retain only the elements that are present in both sets
+            teacherEducObjs.retainAll(classEducObjs);
 
-        model.addAttribute("school", school);
-
-        Teacher teacher = null;
-        List<Teacher> teachers = null;
-        if (sessionTeacherId != 0) {
-            teacher = teacherRepository.findById(sessionTeacherId).orElse(null);
-        } else {
-            teachers = teacherRepository.findAll();
-            teacher = teacherRepository.findById(requestTeacherId).orElse(null);
-            model.addAttribute("teachers", teachers);
-        }
-            model.addAttribute("teacher", teacher);
-
-        StudyPeriod studyPeriod = studyPeriodRepository.findById(studyPeriodId).orElse(null);
-
-        List<SchoolClass> schoolClasses = schoolClassRepository.findBySchoolId(schoolId);
-        model.addAttribute("schoolClasses", schoolClasses);
-
-        List<ClassStudent> classStudents = classStudentRepository.findByStudyPeriodIdAndSchoolClassId(studyPeriodId, schoolClassId);
-        model.addAttribute("classStudents", classStudents);
-
-        // Fetch educObjs taught by the teacher in the given school
-        long teacherId;
-        if(sessionTeacherId!=0) teacherId=sessionTeacherId;
-        else teacherId=requestTeacherId;
-        Set<EducObj> teacherEducObjs = teachEducRepository.findBySchoolIdAndTeacherId(schoolId, teacherId)
-                .stream()
-                .map(TeachEduc::getEducObj)
-                .collect(Collectors.toSet());
-
-        // Fetch educObjs associated with the school class and study period
-        Set<EducObj> classEducObjs = schoolClassEducObjRepository.findByStudyPeriodIdAndSchoolClassId(studyPeriodId, schoolClassId)
-                .stream()
-                .map(SchoolClassEducObj::getEducObj)
-                .collect(Collectors.toSet());
-
-        // Retain only the elements that are present in both sets
-        teacherEducObjs.retainAll(classEducObjs);
-
-        // Sort by ID and collect into a LinkedHashSet to maintain the order
-        LinkedHashSet<EducObj> teacherClassEducObjs = teacherEducObjs.stream()
-                .sorted((e1, e2) -> e1.getId().compareTo(e2.getId()))
-                .collect(Collectors.toCollection(LinkedHashSet::new));
+            // Sort by ID and collect into a LinkedHashSet to maintain the order
+            LinkedHashSet<EducObj> teacherClassEducObjs = teacherEducObjs.stream()
+                    .sorted((e1, e2) -> e1.getId().compareTo(e2.getId()))
+                    .collect(Collectors.toCollection(LinkedHashSet::new));
 
 //        //this should be the subjects in school of teacher in class
 
 
-        //if the teacher is selected through the dropdown list
-        model.addAttribute("absences", absenceRepository.findAll());
-        model.addAttribute("studyPeriodId", studyPeriodId);
-        model.addAttribute("selectedTeacher", teacherRepository.findById(requestTeacherId).orElse(null));
-        model.addAttribute("selectedSchoolClass", schoolClassRepository.findById(schoolClassId).orElse(null));
-        model.addAttribute("teacherClassEducObjs", teacherClassEducObjs);
-        ////    1 - болест, 2 - домашни причини, 3 - закъснение, 9 - отсъствие
-        model.addAttribute("absenceTypes", AbsenceType.values());
+            //if the teacher is selected through the dropdown list
+//        model.addAttribute("absences", absenceRepository.findByStudyPeriodIdAndSchoolClassId(studyPeriodId, schoolClassId));
+            model.addAttribute("absencesDTO", absenceRepository.findByStudyPeriodIdAndSchoolClassIdWithStudentNamesOrderByIdAsc(studyPeriodId, schoolClassId.get()));
+
+//            model.addAttribute("studyPeriodId", studyPeriodId);
+            model.addAttribute("selectedTeacher", teacherRepository.findById(teacherId.get()).orElse(null));
+            model.addAttribute("selectedSchoolClass", schoolClassRepository.findById(schoolClassId.get()).orElse(null));
+            model.addAttribute("teacherClassEducObjs", teacherClassEducObjs);
+            ////    1 - болест, 2 - домашни причини, 3 - закъснение, 9 - отсъствие
+            model.addAttribute("absenceTypes", AbsenceType.values());
 //        Статус: 0 - необработено, 1 - неизвинено, 2 - извинено
-        model.addAttribute("statuses", AbsenceStatus.values());
+            model.addAttribute("statuses", AbsenceStatus.values());
 
-
+        }
+        model.addAttribute("schoolClassId", schoolClassId.orElse(null));
+        model.addAttribute("teacherId", teacherId.orElse(null));
         return "absences/index";
     }
 
     @PostMapping("/create")
     public String createAbsence(@Valid @ModelAttribute AbsenceCreateRequest request,
                                 BindingResult result,
-                                RedirectAttributes redirectAttributes) {
+                                RedirectAttributes redirectAttributes,
+                                @RequestParam("schoolClassId") Optional<Long> schoolClassId,
+                                @RequestParam("teacherId") Optional<Long> teacherId) {
         if (result.hasErrors()) {
             // Handle validation errors
             redirectAttributes.addFlashAttribute("result", new ActionResult("Има невалидно попълнени данни.", ActionResultType.ERROR));
             redirectAttributes.addFlashAttribute("errors", result);
             redirectAttributes.addFlashAttribute("request", request); // To keep the entered data in case of errors
-            return "redirect:/absences"; // Redirect to the form page
+            return "redirect:/absences?schoolClassId=" + schoolClassId.orElse(null) + "&teacherId=" + teacherId.orElse(null);
         }
 
         // Convert AbsenceCreateRequest to Absence entity
@@ -188,11 +156,13 @@ public class AbsencesController {
             redirectAttributes.addFlashAttribute("result", new ActionResult("Възникна грешка при въвеждане на отсъствие.", ActionResultType.ERROR));
         }
 
-        return "redirect:/absences";
+        return "redirect:/absences?schoolClassId=" + schoolClassId.orElse(null) + "&teacherId=" + teacherId.orElse(null);
     }
 
     @PostMapping("/{id}/delete")
-    public String deleteAbsence(@PathVariable Long id, RedirectAttributes redirectAttributes) {
+    public String deleteAbsence(@PathVariable Long id, RedirectAttributes redirectAttributes,
+                                @RequestParam("schoolClassId") Optional<Long> schoolClassId,
+                                @RequestParam("teacherId") Optional<Long> teacherId) {
         // Check if the absence exists
         Absence absence = absenceRepository.findById(id).orElse(null);
         if (absence == null) {
@@ -207,26 +177,28 @@ public class AbsencesController {
             }
         }
 
-        return "redirect:/absences";
+        return "redirect:/absences?schoolClassId=" + schoolClassId.orElse(null) + "&teacherId=" + teacherId.orElse(null);
     }
 
     @PostMapping("/{id}/update")
     public String updateAbsence(@PathVariable Long id, @Valid @ModelAttribute AbsenceCreateRequest request,
                                 BindingResult result,
-                                RedirectAttributes redirectAttributes) {
+                                RedirectAttributes redirectAttributes,
+                                @RequestParam("schoolClassId") Optional<Long> schoolClassId,
+                                @RequestParam("teacherId") Optional<Long> teacherId) {
         if (result.hasErrors()) {
             // Handle validation errors
             redirectAttributes.addFlashAttribute("result", new ActionResult("Има невалидно попълнени полета.", ActionResultType.ERROR));
             redirectAttributes.addFlashAttribute("errors", result);
             redirectAttributes.addFlashAttribute("request", request); // To keep the entered data in case of errors
-            return "redirect:/absences"; // Redirect to the form page
+            return "redirect:/absences?schoolClassId=" + schoolClassId.orElse(null) + "&teacherId=" + teacherId.orElse(null);
         }
 
         // Retrieve the existing absence entity by ID
         Absence absence = absenceRepository.findById(id).orElse(null);
         if (absence == null) {
             redirectAttributes.addFlashAttribute("result", new ActionResult("Отсъствието не беше намерено.", ActionResultType.ERROR));
-            return "redirect:/absences";
+            return "redirect:/absences?schoolClassId=" + schoolClassId.orElse(null) + "&teacherId=" + teacherId.orElse(null);
         }
 
         // Update the fields of the existing absence entity
@@ -249,13 +221,8 @@ public class AbsencesController {
             redirectAttributes.addFlashAttribute("result", new ActionResult("Възникна грешка при редакция на отсъствие.", ActionResultType.ERROR));
         }
 
-        return "redirect:/absences";
+        return "redirect:/absences?schoolClassId=" + schoolClassId.orElse(null) + "&teacherId=" + teacherId.orElse(null);
     }
-
-
-
-
-
 
 
 }

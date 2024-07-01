@@ -1,6 +1,6 @@
 package bg.nbuteam4.myschool.enums;
 
-public enum ActionResultType {
+    public enum ActionResultType {
     SUCCESS("success"),
     INFO("info"),
     WARNING("warning"),

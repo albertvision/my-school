@@ -3,6 +3,7 @@ package bg.nbuteam4.myschool.entity;
 import bg.nbuteam4.myschool.enums.AbsenceStatus;
 import bg.nbuteam4.myschool.enums.AbsenceType;
 import jakarta.persistence.*;
+import org.springframework.format.annotation.DateTimeFormat;
 
 import java.time.LocalDate;
 
@@ -27,6 +28,7 @@ public class Absence {
     private int studentNumberInClass;
 
     @Column(name = "absence_date", nullable = false)
+
     @Temporal(TemporalType.DATE)
     private LocalDate absenceDate;
 

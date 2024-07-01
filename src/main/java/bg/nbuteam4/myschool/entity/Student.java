@@ -11,7 +11,7 @@ public class Student {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Column(length = 10)
+    @Column(length = 10, nullable = false)
     private String egn;
 
     @ManyToOne
