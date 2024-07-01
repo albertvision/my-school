@@ -7,12 +7,12 @@
     </div>
 
 </div>
-<div th:fragment="checkbox(id, label, value, checked)">
+<div th:fragment="checkbox(id, label, value, checked)" th:with="append=${append ?: ''}">
     <div class="checkbox">
         <label>
             <input type="checkbox" th:name="${id}" th:id="${id}" th:value="${value}" th:checked="${checked}"/>
             [[${label}]]<br>
-            <small class="text-muted">Ще премахне съществуването на друг директор, ако има такъв.</small>
+            [(${append})]
         </label>
     </div>
 </div>

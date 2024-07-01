@@ -37,8 +37,10 @@
                             </div>
                         </div>
 
-                        <div th:insert="~{form-group :: checkbox('principal', 'Директор на училището', 1, *{isPrincipal()})}">
-
+                        <div th:insert="~{form-group :: checkbox('principal', 'Директор на училището', 1, *{isPrincipal()})}"
+                             th:with="append=~{::.text-muted}">
+                            <small class="text-muted">Ще премахне съществуването на друг директор, ако има
+                                такъв.</small>
                         </div>
                         <button type="submit" class="btn btn-primary">Запиши</button>
                         <a href="/teacher" class="btn btn-link">Отказ</a>
