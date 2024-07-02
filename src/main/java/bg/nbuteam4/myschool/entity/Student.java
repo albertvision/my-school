@@ -104,5 +104,9 @@ public class Student {
     public void setStatus(int status) {
         this.status = status;
     }
+
+    public String getFullName() {
+        return firstName + " " + middleName + " " + lastName;
+    }
 }
 

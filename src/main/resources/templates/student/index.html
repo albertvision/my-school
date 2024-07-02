@@ -12,56 +12,62 @@
        th:class="'alert alert-' + ${result.type().getUiClass()}"
        th:text="${result.message()}"/>
 
-    <div class="panel panel-default">
-        <div class="table-responsive">
-            <table class="table table-hover table-striped">
-                <thead>
-                <tr>
-                    <th>ЕГН</th>
-                    <th>Име</th>
-                    <th>Презиме</th>
-                    <th>Фамилия</th>
-                    <th>ЕГН родител</th>
-                    <th>Име родител</th>
-                    <th>Статус</th>
-                    <th colspan="2">Действия</th>
-                </tr>
-                </thead>
-                <tbody>
-                <tr th:if="${students.size()} == 0">
-                    <td colspan="9">Няма записи.</td>
-                </tr>
-                <tr th:each="student : ${students}">
-                    <td th:text="${student.egn}"></td>
-                    <td th:text="${student.firstName}"></td>
-                    <td th:text="${student.middleName}"></td>
-                    <td th:text="${student.lastName}"></td>
-                    <td th:text="${student.parentEgn}"></td>
-                    <td th:text="${student.parentName}"></td>
-                    <td>
+    <form th:action="@{/student}">
+        <div th:replace="~{form-group :: fieldSelect('schoolClassId', 'Клас', ${schoolClasses}, ${selectedSchoolClassId})}"></div>
+        <button type="submit" class="btn btn-primary">Филтрирай</button>
+    </form>
+    <div th:each="classStudents : ${classStudentsByClass}">
+        <hr>
+
+        <h2 th:text="${classStudents.getKey().name}"></h2>
+        <div class="panel panel-default">
+            <div class="table-responsive">
+                <table class="table table-hover table-striped">
+                    <thead>
+                    <tr>
+                        <th width="10">#</th>
+                        <th>Име</th>
+                        <th>ЕГН родител</th>
+                        <th>Име родител</th>
+                        <th>Статус</th>
+                        <th colspan="2">Действия</th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    <tr th:if="${students.size()} == 0">
+                        <td colspan="7">Няма записи.</td>
+                    </tr>
+                    <tr th:each="classStudent : ${classStudents.getValue()}" th:with="student=${classStudent.student}">
+                        <td th:text="${classStudent.studentNumberInClass}"></td>
+                        <td th:text="${student.getFullName() }"></td>
+                        <td th:text="${student.parentEgn}"></td>
+                        <td th:text="${student.parentName}"></td>
+                        <td>
                         <span class="badge bg-succcess">
                             [[${student.getStatus() == 1 ? 'Активен' : 'Неактивен'}]]
                         </span>
-                    </td>
-                    <td width="10">
-                        <a th:href="'/student/' + ${student.getId()}"
-                           class="btn btn-xs btn-warning"
-                           data-toggle="tooltip"
-                           title="Редактиране">
-                            <i class="glyphicon glyphicon-pencil"></i>
-                        </a>
-                    </td>
-                    <td width="10">
-                        <form th:action="'/student/' + ${student.getId()} + '/delete'" method="post">
-                            <input type="hidden" name="_csrf" th:value="${_csrf.token}"/>
-                            <button type="submit" class="btn btn-xs btn-danger js-confirm" data-toggle="tooltip" title="Изтриване">
-                                <i class="glyphicon glyphicon-remove"></i>
-                            </button>
-                        </form>
-                    </td>
-                </tr>
-                </tbody>
-            </table>
+                        </td>
+                        <td width="10">
+                            <a th:href="'/student/' + ${student.getId()}"
+                               class="btn btn-xs btn-warning"
+                               data-toggle="tooltip"
+                               title="Редактиране">
+                                <i class="glyphicon glyphicon-pencil"></i>
+                            </a>
+                        </td>
+                        <td width="10">
+                            <form th:action="'/student/' + ${student.getId()} + '/delete'" method="post">
+                                <input type="hidden" name="_csrf" th:value="${_csrf.token}"/>
+                                <button type="submit" class="btn btn-xs btn-danger js-confirm" data-toggle="tooltip"
+                                        title="Изтриване">
+                                    <i class="glyphicon glyphicon-remove"></i>
+                                </button>
+                            </form>
+                        </td>
+                    </tr>
+                    </tbody>
+                </table>
+            </div>
         </div>
     </div>
 </div>

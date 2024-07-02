@@ -23,6 +23,7 @@ import org.springframework.web.server.ResponseStatusException;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 import org.springframework.web.servlet.view.RedirectView;
 
+import java.util.Comparator;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
@@ -55,10 +56,24 @@ public class StudentController {
     @GetMapping
     String index(
             Model model,
-            @GlobalFilter("school") School school
+            @GlobalFilter("school") School school,
+            @GlobalFilter("studyPeriod") StudyPeriod studyPeriod,
+            @RequestParam(value = "schoolClassId", required = false) Long schoolClassId
     ) {
+
         List<Student> students = studentRepository.findBySchoolId(school.getId());
 
+        Map<SchoolClass, List<ClassStudent>> classStudents = Optional.ofNullable(schoolClassId)
+                .map(it -> classStudentRepository.findByStudyPeriodIdAndSchoolClassId(studyPeriod.getId(), schoolClassId))
+                .orElseGet(() -> classStudentRepository.findByStudyPeriodId(studyPeriod.getId()))
+                .stream()
+                .sorted(Comparator.comparing(ClassStudent::getSchoolClass))
+                .sorted(Comparator.comparing(ClassStudent::getStudentNumberInClass))
+                .collect(Collectors.groupingBy(ClassStudent::getSchoolClass));
+
+        model.addAttribute("classStudentsByClass", classStudents);
+        model.addAttribute("schoolClasses", getSchoolClassesSelectOptions(school));
+        model.addAttribute("selectedSchoolClassId", schoolClassId);
         model.addAttribute("students", students);
         model.addAttribute("title", "Ученици");
 

@@ -13,6 +13,8 @@ import java.util.Optional;
 public interface ClassStudentRepository extends ListCrudRepository<ClassStudent, Long> {
     Optional<ClassStudent> findById(Long id);
 
+    List<ClassStudent> findByStudyPeriodId(Long studyPeriodId);
+
     List<ClassStudent> findByStudyPeriodIdAndSchoolClassId(Long studyPeriodId, Long schoolClassId);
     List<ClassStudent> findByStudyPeriodIdAndSchoolClassIdOrderByStudentNumberInClass(Long studyPeriodId, Long schoolClassId);
 
