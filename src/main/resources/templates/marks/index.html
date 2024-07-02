@@ -11,38 +11,35 @@
                 <a href="javascript:void(0);" th:if="${teacherId != null and schoolClassId != null}" id="addNewMarkButton" onclick="addNewRow()"
                    class="btn btn-primary btn-sm">Добавяне на нов</a>
             </p>
-            <p th:if="${result} != null"
-               th:class="'alert alert-' + ${result.type().getUiClass()}"
-               th:text="${result.message()}"/>
-
-            <br th:if="${school == null}">
-            <!-- Display selected school name -->
-            <div class="container mt-3" th:if="${school != null}">
-                <h2 class="font-weight-bold" th:text="${school.name}"></h2>
-            </div>
-
-            <form th:action="@{/marks}">
-                <div class="form-group">
-                    <label for="teacherId">Избери учител</label>
-                    <select id="teacherId" name="teacherId" class="form-control" required>
-                        <option value="">Избери...</option>
-                        <option th:each="teacher : ${teachers}" th:value="${teacher.id}"
-                                th:selected="${selectedTeacher != null and selectedTeacher.id == teacher.id}"
-                                th:text="${teacher.name}"></option>
-                    </select>
-                </div>
-                <div class="form-group">
-                    <label for="schoolClassId">Избери клас</label>
-                    <select id="schoolClassId" name="schoolClassId" class="form-control" required>
-                        <option value="">Избери...</option>
-                        <option th:each="schoolClass : ${schoolClasses}" th:value="${schoolClass.id}"
-                                th:selected="${selectedSchoolClass != null and selectedSchoolClass.id == schoolClass.id}"
-                                th:text="${schoolClass.school.name + ' - ' + schoolClass.name}"></option>
-                    </select>
-                </div>
-                <button type="submit" class="btn btn-primary">Избери</button>
-            </form>
         </div>
+
+        <p th:if="${result} != null"
+           th:class="'alert alert-' + ${result.type().getUiClass()}"
+           th:text="${result.message()}"/>
+
+        <form th:action="@{/marks}">
+            <div class="form-group">
+                <label for="teacherId">Избери учител</label>
+                <select id="teacherId" name="teacherId" class="form-control" required>
+                    <option value="">Избери...</option>
+                    <option th:each="teacher : ${teachers}" th:value="${teacher.id}"
+                            th:selected="${selectedTeacher != null and selectedTeacher.id == teacher.id}"
+                            th:text="${teacher.name}"></option>
+                </select>
+            </div>
+            <div class="form-group">
+                <label for="schoolClassId">Избери клас</label>
+                <select id="schoolClassId" name="schoolClassId" class="form-control" required>
+                    <option value="">Избери...</option>
+                    <option th:each="schoolClass : ${schoolClasses}" th:value="${schoolClass.id}"
+                            th:selected="${selectedSchoolClass != null and selectedSchoolClass.id == schoolClass.id}"
+                            th:text="${schoolClass.name}"></option>
+                </select>
+            </div>
+            <button type="submit" class="btn btn-primary">Избери</button>
+        </form>
+
+        <hr>
 
         <!-- Table displaying marks objects -->
         <div class="panel panel-default" th:if="${teacherId != null and schoolClassId != null}">
@@ -68,8 +65,8 @@
                         <td th:id="'markDateTime-'+${mark.id}" th:text="${mark.dateTimeFormatted}"></td>
                         <td th:id="'educObj.name-'+${mark.id}" th:text="${mark.educObj.name}"></td>
                         <td th:id="'markValue-'+${mark.id}" th:text="${mark.value}"></td>
-                        <td th:id="'typeMark-'+${mark.id}" th:text="${mark.typeMark.id + ' - ' + mark.typeMark.name}"></td>
-                        <td th:id="'status-'+${mark.id}" th:text="${mark.status}"></td>
+                        <td th:id="'typeMark-'+${mark.id}" th:text="${mark.typeMark.name}"></td>
+                        <td th:id="'status-'+${mark.id}" th:text="${mark.status.label}"></td>
                         <td width="10">
                             <a th:id="'edit-btn-'+${mark.id}" href="javascript:void(0);"
                                class="btn btn-xs btn-warning"
@@ -164,7 +161,7 @@
                                 <select id="status" name="status" form="new-form-create" class="form-control" required>
                                     <option th:each="status : ${statuses}"
                                             th:value="${status.name()}"
-                                            th:text="${status.name()}"></option>
+                                            th:text="${status.label}"></option>
                                 </select>
                             </label>
                         </td>
