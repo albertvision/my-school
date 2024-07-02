@@ -12,6 +12,7 @@ import bg.nbuteam4.myschool.repository.SchoolRepository;
 import bg.nbuteam4.myschool.validation.GlobalFilter;
 import jakarta.validation.Valid;
 import org.springframework.dao.DataIntegrityViolationException;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
@@ -26,6 +27,7 @@ import java.util.stream.Collectors;
 
 @Controller
 @RequestMapping("/schoolClass")
+@PreAuthorize("hasAnyRole('ADMIN', 'DIRECTOR', 'TEACHER')")
 public class SchoolClassController {
 
     private final SchoolClassRepository schoolClassRepository;

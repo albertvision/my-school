@@ -1,5 +1,6 @@
 <!DOCTYPE html>
-<html lang="bg" xmlns:th="http://www.thymeleaf.org" th:fragment="layout(body)">
+<html lang="bg" xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.thymeleaf.org/extras/spring-security"
+      th:fragment="layout(body)">
 <head>
     <meta charset="UTF-8">
     <title th:text="${#vars.title} ? ${#vars.title} + ' - My School' : 'My School'"></title>
@@ -21,7 +22,7 @@
         <nav class="collapse navbar-collapse" role="navigation" id="nav-main">
             <ul class="nav navbar-nav">
                 <li><a href="/">Табло</a></li>
-                <li class="dropdown">
+                <li class="dropdown" sec:authorize="${hasRole('ADMIN')}">
                     <a class="dropbtn">Каталози <b class="caret"></b></a>
                     <ul class="dropdown-menu">
                         <li><a href="/users">Потребители</a></li>
