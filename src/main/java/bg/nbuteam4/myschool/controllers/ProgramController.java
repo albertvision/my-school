@@ -6,17 +6,16 @@ import bg.nbuteam4.myschool.entity.School;
 import bg.nbuteam4.myschool.entity.SchoolClass;
 import bg.nbuteam4.myschool.entity.StudyPeriod;
 import bg.nbuteam4.myschool.enums.ActionResultType;
-import bg.nbuteam4.myschool.exception.InvalidGlobalFilterException;
 import bg.nbuteam4.myschool.repository.ProgramRepository;
 import bg.nbuteam4.myschool.repository.SchoolClassRepository;
 import bg.nbuteam4.myschool.repository.SchoolRepository;
 import bg.nbuteam4.myschool.repository.StudyPeriodRepository;
+import bg.nbuteam4.myschool.validation.GlobalFilter;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.SessionAttribute;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import java.time.DayOfWeek;
@@ -48,14 +47,11 @@ public class ProgramController {
     @GetMapping
     public String index(
             Model model,
-            @SessionAttribute("schoolId") Long schoolId,
-            @SessionAttribute("studyPeriodId") Long studyPeriodId,
+            @GlobalFilter("school") School school,
+            @GlobalFilter("studyPeriod") StudyPeriod studyPeriod,
             @RequestParam("schoolClassId") Optional<Long> schoolClassId,
             RedirectAttributes redirectAttributes
     ) {
-        School school = schoolRepository.findById(schoolId).orElseThrow(() -> new InvalidGlobalFilterException("Невалидно училище."));
-        StudyPeriod studyPeriod = studyPeriodRepository.findById(studyPeriodId).orElseThrow(() -> new InvalidGlobalFilterException("Невалиден срок."));
-
         if (schoolClassId.isPresent()) {
             SchoolClass schoolClass = schoolClassRepository.findById(schoolClassId.get()).orElse(null);
 
@@ -65,7 +61,7 @@ public class ProgramController {
                 return "redirect:/program";
             }
 
-            List<Program> programCells = programRepository.findByStudyPeriodIdAndSchoolClassId(studyPeriodId, schoolClass.getId());
+            List<Program> programCells = programRepository.findByStudyPeriodIdAndSchoolClassId(studyPeriod.getId(), schoolClass.getId());
 
             model.addAttribute("schoolClass", schoolClass);
             model.addAttribute("programCells", programCells);

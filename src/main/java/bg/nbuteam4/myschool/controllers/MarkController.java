@@ -1,13 +1,12 @@
 package bg.nbuteam4.myschool.controllers;
 
-import bg.nbuteam4.myschool.dto.MarkCreateRequest;
 import bg.nbuteam4.myschool.dto.ActionResult;
 import bg.nbuteam4.myschool.dto.MarkCreateRequest;
 import bg.nbuteam4.myschool.entity.*;
-import bg.nbuteam4.myschool.enums.MarkStatus;
 import bg.nbuteam4.myschool.enums.ActionResultType;
-import bg.nbuteam4.myschool.exception.InvalidGlobalFilterException;
+import bg.nbuteam4.myschool.enums.MarkStatus;
 import bg.nbuteam4.myschool.repository.*;
+import bg.nbuteam4.myschool.validation.GlobalFilter;
 import jakarta.validation.Valid;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -28,7 +27,6 @@ public class MarkController {
     private final MarkRepository markRepository;
 
     private final StudyPeriodRepository studyPeriodRepository;
-    private final SchoolRepository schoolRepository;
     private final TeacherRepository teacherRepository;
     private final EducObjRepository educObjRepository;
     private final TeachEducRepository teachEducRepository;
@@ -38,11 +36,19 @@ public class MarkController {
     private final TypeMarkRepository typeMarkRepository;
 
 
-    public MarkController(MarkRepository markRepository, StudyPeriodRepository studyPeriodRepository, SchoolRepository schoolRepository, TeacherRepository teacherRepository, EducObjRepository educObjRepository, TeachEducRepository teachEducRepository, ClassStudentRepository classStudentRepository, SchoolClassEducObjRepository schoolClassEducObjRepository, SchoolClassRepository schoolClassRepository,
-                          TypeMarkRepository typeMarkRepository) {
+    public MarkController(
+            MarkRepository markRepository,
+            StudyPeriodRepository studyPeriodRepository,
+            TeacherRepository teacherRepository,
+            EducObjRepository educObjRepository,
+            TeachEducRepository teachEducRepository,
+            ClassStudentRepository classStudentRepository,
+            SchoolClassEducObjRepository schoolClassEducObjRepository,
+            SchoolClassRepository schoolClassRepository,
+            TypeMarkRepository typeMarkRepository
+    ) {
         this.markRepository = markRepository;
         this.studyPeriodRepository = studyPeriodRepository;
-        this.schoolRepository = schoolRepository;
         this.teacherRepository = teacherRepository;
         this.educObjRepository = educObjRepository;
         this.teachEducRepository = teachEducRepository;
@@ -54,8 +60,8 @@ public class MarkController {
 
     @GetMapping
     public String index(Model model,
-                        @SessionAttribute("schoolId") Long schoolId,
-                        @SessionAttribute("studyPeriodId") Long studyPeriodId,
+                        @GlobalFilter("school") School school,
+                        @GlobalFilter("studyPeriod") StudyPeriod studyPeriod,
                         @RequestParam("schoolClassId") Optional<Long> schoolClassId,
                         @RequestParam("teacherId") Optional<Long> teacherId,
                         RedirectAttributes redirectAttributes) {
@@ -64,12 +70,7 @@ public class MarkController {
 
         List<Teacher> teachers = teacherRepository.findAll();
 
-
-        School school = schoolRepository.findById(schoolId).orElseThrow(() -> new InvalidGlobalFilterException("Невалидно училище."));
-        StudyPeriod studyPeriod = studyPeriodRepository.findById(studyPeriodId).orElseThrow(() -> new InvalidGlobalFilterException("Невалиден срок."));
-
-
-        List<SchoolClass> schoolClasses = schoolClassRepository.findBySchoolId(schoolId);
+        List<SchoolClass> schoolClasses = schoolClassRepository.findBySchoolId(school.getId());
 
         model.addAttribute("school", school);
         model.addAttribute("teachers", teachers);
@@ -78,16 +79,16 @@ public class MarkController {
         if (schoolClassId.isPresent() && teacherId.isPresent()) {
 
 
-            List<ClassStudent> classStudents = classStudentRepository.findByStudyPeriodIdAndSchoolClassIdOrderByStudentNumberInClass(studyPeriodId, schoolClassId.get());
+            List<ClassStudent> classStudents = classStudentRepository.findByStudyPeriodIdAndSchoolClassIdOrderByStudentNumberInClass(studyPeriod.getId(), schoolClassId.get());
             model.addAttribute("classStudents", classStudents);
 
-            Set<EducObj> teacherEducObjs = teachEducRepository.findBySchoolIdAndTeacherId(schoolId, teacherId.get())
+            Set<EducObj> teacherEducObjs = teachEducRepository.findBySchoolIdAndTeacherId(school.getId(), teacherId.get())
                     .stream()
                     .map(TeachEduc::getEducObj)
                     .collect(Collectors.toSet());
 
             // Fetch educObjs associated with the school class and study period
-            Set<EducObj> classEducObjs = schoolClassEducObjRepository.findByStudyPeriodIdAndSchoolClassId(studyPeriodId, schoolClassId.get())
+            Set<EducObj> classEducObjs = schoolClassEducObjRepository.findByStudyPeriodIdAndSchoolClassId(studyPeriod.getId(), schoolClassId.get())
                     .stream()
                     .map(SchoolClassEducObj::getEducObj)
                     .collect(Collectors.toSet());
@@ -105,14 +106,14 @@ public class MarkController {
 
             //if the teacher is selected through the dropdown list
 //        model.addAttribute("marks", markRepository.findByStudyPeriodIdAndSchoolClassId(studyPeriodId, schoolClassId));
-            model.addAttribute("marksDTO", markRepository.findByStudyPeriodIdAndSchoolClassIdAndTeacherIdWithStudentNamesOrderByIdAsc(studyPeriodId, schoolClassId.get(),teacherId.get()));
+            model.addAttribute("marksDTO", markRepository.findByStudyPeriodIdAndSchoolClassIdAndTeacherIdWithStudentNamesOrderByIdAsc(studyPeriod.getId(), schoolClassId.get(), teacherId.get()));
 
 //            model.addAttribute("studyPeriodId", studyPeriodId);
             model.addAttribute("selectedTeacher", teacherRepository.findById(teacherId.get()).orElse(null));
             model.addAttribute("selectedSchoolClass", schoolClassRepository.findById(schoolClassId.get()).orElse(null));
             model.addAttribute("teacherClassEducObjs", teacherClassEducObjs);
             ////    1 - болест, 2 - домашни причини, 3 - закъснение, 9 - отсъствие
-            model.addAttribute("typeMarks", typeMarkRepository.findBySchoolIdOrderByIdAsc(schoolId));
+            model.addAttribute("typeMarks", typeMarkRepository.findBySchoolIdOrderByIdAsc(school.getId()));
 //        Статус: 0 - необработено, 1 - неизвинено, 2 - извинено
             model.addAttribute("statuses", MarkStatus.values());
 
@@ -124,10 +125,10 @@ public class MarkController {
 
     @PostMapping("/create")
     public String createMark(@Valid @ModelAttribute MarkCreateRequest request,
-                                BindingResult result,
-                                RedirectAttributes redirectAttributes,
-                                @RequestParam("schoolClassId") Optional<Long> schoolClassId,
-                                @RequestParam("teacherId") Optional<Long> teacherId) {
+                             BindingResult result,
+                             RedirectAttributes redirectAttributes,
+                             @RequestParam("schoolClassId") Optional<Long> schoolClassId,
+                             @RequestParam("teacherId") Optional<Long> teacherId) {
         if (result.hasErrors()) {
             // Handle validation errors
             redirectAttributes.addFlashAttribute("result", new ActionResult("Има невалидно попълнени данни.", ActionResultType.ERROR));
@@ -161,8 +162,8 @@ public class MarkController {
 
     @PostMapping("/{id}/delete")
     public String deleteMark(@PathVariable Long id, RedirectAttributes redirectAttributes,
-                                @RequestParam("schoolClassId") Optional<Long> schoolClassId,
-                                @RequestParam("teacherId") Optional<Long> teacherId) {
+                             @RequestParam("schoolClassId") Optional<Long> schoolClassId,
+                             @RequestParam("teacherId") Optional<Long> teacherId) {
         // Check if the mark exists
         Mark mark = markRepository.findById(id).orElse(null);
         if (mark == null) {
@@ -182,10 +183,10 @@ public class MarkController {
 
     @PostMapping("/{id}/update")
     public String updateMark(@PathVariable Long id, @Valid @ModelAttribute MarkCreateRequest request,
-                                BindingResult result,
-                                RedirectAttributes redirectAttributes,
-                                @RequestParam("schoolClassId") Optional<Long> schoolClassId,
-                                @RequestParam("teacherId") Optional<Long> teacherId) {
+                             BindingResult result,
+                             RedirectAttributes redirectAttributes,
+                             @RequestParam("schoolClassId") Optional<Long> schoolClassId,
+                             @RequestParam("teacherId") Optional<Long> teacherId) {
         if (result.hasErrors()) {
             // Handle validation errors
             redirectAttributes.addFlashAttribute("result", new ActionResult("Има невалидно попълнени полета.", ActionResultType.ERROR));

@@ -11,6 +11,7 @@ import bg.nbuteam4.myschool.repository.EducObjRepository;
 import bg.nbuteam4.myschool.repository.SchoolRepository;
 import bg.nbuteam4.myschool.repository.TeachEducRepository;
 import bg.nbuteam4.myschool.repository.TeacherRepository;
+import bg.nbuteam4.myschool.validation.GlobalFilter;
 import jakarta.servlet.http.HttpSession;
 import jakarta.validation.Valid;
 import org.springframework.dao.DataIntegrityViolationException;
@@ -59,11 +60,11 @@ public class TeacherController {
 
 
     @GetMapping
-    public String index(Model model) {
-        long schoolId = (long) httpSession.getAttribute("schoolId");
-
-        School school = schoolRepository.findById(schoolId).orElse(null);
-        List<Teacher> schoolTeacher = teacherRepository.findBySchoolId(schoolId);
+    public String index(
+            Model model,
+            @GlobalFilter("school") School school
+    ) {
+        List<Teacher> schoolTeacher = teacherRepository.findBySchoolId(school.getId());
 
         model.addAttribute("title", "Преподаватели");
         model.addAttribute("school", school);
@@ -75,10 +76,9 @@ public class TeacherController {
     @GetMapping("/{id}")
     public String edit(
             @PathVariable("id") Long id,
-            @SessionAttribute("schoolId") Long schoolId,
+            @GlobalFilter("school") School school,
             Model model
     ) {
-        School school = schoolRepository.findById(schoolId).orElseThrow(() -> new ResponseStatusException(NOT_FOUND));
         Teacher teacher = teacherRepository.findById(id).orElseThrow(() -> new ResponseStatusException(NOT_FOUND));
         List<TeachEduc> teacherSubjects = teachEducRepository.findBySchoolIdAndTeacherId(school.getId(), teacher.getId());
 
@@ -94,13 +94,12 @@ public class TeacherController {
     @GetMapping("/create")
     public String create(
             Model model,
-            @SessionAttribute("schoolId") Long schoolId
+            @GlobalFilter("school") School school
     ) {
         if (!model.containsAttribute("request")) {
             model.addAttribute("request", new TeacherSaveRequest());
         }
 
-        School school = schoolRepository.findById(schoolId).orElseThrow(() -> new ResponseStatusException(NOT_FOUND));
         List<EducObj> educObjs = educObjRepository.findBySchoolId(school.getId());
 
         model.addAttribute("title", "Нов преподавател");
@@ -111,12 +110,11 @@ public class TeacherController {
 
     @PostMapping("/save")
     public String saveTeacher(
-            @SessionAttribute("schoolId") Long schoolId,
+            @GlobalFilter("school") School school,
             @Valid @ModelAttribute TeacherSaveRequest request,
             BindingResult result,
             RedirectAttributes redirectAttributes
     ) {
-        School school = schoolRepository.findById(schoolId).orElseThrow(() -> new ResponseStatusException(NOT_FOUND));
         Map<Long, EducObj> schoolSubjects = educObjRepository.findBySchoolId(school.getId())
                 .stream()
                 .collect(Collectors.toMap(EducObj::getId, Function.identity()));
@@ -178,17 +176,15 @@ public class TeacherController {
     RedirectView index(
             RedirectAttributes attributes,
             @PathVariable("id") Long id,
-            @SessionAttribute("schoolId") Long schoolId
+            @GlobalFilter("school") School school
     ) {
-        School school = schoolRepository.findById(schoolId).orElseThrow(() -> new ResponseStatusException(NOT_FOUND));
-
         try {
             if (school.getPrincipal() != null && school.getPrincipal().getId().equals(id)) {
                 school.setPrincipal(null);
                 schoolRepository.save(school);
             }
 
-            teachEducRepository.deleteBySchoolIdAndTeacherId(schoolId, id);
+            teachEducRepository.deleteBySchoolIdAndTeacherId(school.getId(), id);
             teacherRepository.deleteById(id);
 
             attributes.addFlashAttribute("result", new ActionResult("Успешно изтриване.", ActionResultType.SUCCESS));

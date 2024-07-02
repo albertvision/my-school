@@ -6,9 +6,8 @@ import bg.nbuteam4.myschool.entity.*;
 import bg.nbuteam4.myschool.enums.AbsenceStatus;
 import bg.nbuteam4.myschool.enums.AbsenceType;
 import bg.nbuteam4.myschool.enums.ActionResultType;
-import bg.nbuteam4.myschool.exception.InvalidGlobalFilterException;
 import bg.nbuteam4.myschool.repository.*;
-import jakarta.servlet.http.HttpSession;
+import bg.nbuteam4.myschool.validation.GlobalFilter;
 import jakarta.validation.Valid;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -56,8 +55,8 @@ public class AbsencesController {
 
     @GetMapping
     public String index(Model model,
-                        @SessionAttribute("schoolId") Long schoolId,
-                        @SessionAttribute("studyPeriodId") Long studyPeriodId,
+                        @GlobalFilter("school") School school,
+                        @GlobalFilter("studyPeriod") StudyPeriod studyPeriod,
                         @RequestParam("schoolClassId") Optional<Long> schoolClassId,
                         @RequestParam("teacherId") Optional<Long> teacherId,
                         RedirectAttributes redirectAttributes) {
@@ -65,29 +64,23 @@ public class AbsencesController {
         model.addAttribute("title", "Отсъствия");
 
         List<Teacher> teachers = teacherRepository.findAll();
-
-
-        School school = schoolRepository.findById(schoolId).orElseThrow(() -> new InvalidGlobalFilterException("Невалидно училище."));
-        StudyPeriod studyPeriod = studyPeriodRepository.findById(studyPeriodId).orElseThrow(() -> new InvalidGlobalFilterException("Невалиден срок."));
-
-
-        List<SchoolClass> schoolClasses = schoolClassRepository.findBySchoolId(schoolId);
+        List<SchoolClass> schoolClasses = schoolClassRepository.findBySchoolId(school.getId());
 
         model.addAttribute("school", school);
         model.addAttribute("teachers", teachers);
         model.addAttribute("schoolClasses", schoolClasses);
 
         if (schoolClassId.isPresent() && teacherId.isPresent()) {
-            List<ClassStudent> classStudents = classStudentRepository.findByStudyPeriodIdAndSchoolClassIdOrderByStudentNumberInClass(studyPeriodId, schoolClassId.get());
+            List<ClassStudent> classStudents = classStudentRepository.findByStudyPeriodIdAndSchoolClassIdOrderByStudentNumberInClass(studyPeriod.getId(), schoolClassId.get());
             model.addAttribute("classStudents", classStudents);
 
-            Set<EducObj> teacherEducObjs = teachEducRepository.findBySchoolIdAndTeacherId(schoolId, teacherId.get())
+            Set<EducObj> teacherEducObjs = teachEducRepository.findBySchoolIdAndTeacherId(school.getId(), teacherId.get())
                     .stream()
                     .map(TeachEduc::getEducObj)
                     .collect(Collectors.toSet());
 
             // Fetch educObjs associated with the school class and study period
-            Set<EducObj> classEducObjs = schoolClassEducObjRepository.findByStudyPeriodIdAndSchoolClassId(studyPeriodId, schoolClassId.get())
+            Set<EducObj> classEducObjs = schoolClassEducObjRepository.findByStudyPeriodIdAndSchoolClassId(studyPeriod.getId(), schoolClassId.get())
                     .stream()
                     .map(SchoolClassEducObj::getEducObj)
                     .collect(Collectors.toSet());
@@ -105,7 +98,7 @@ public class AbsencesController {
 
             //if the teacher is selected through the dropdown list
 //        model.addAttribute("absences", absenceRepository.findByStudyPeriodIdAndSchoolClassId(studyPeriodId, schoolClassId));
-            model.addAttribute("absencesDTO", absenceRepository.findByStudyPeriodIdAndSchoolClassIdWithStudentNamesOrderByIdAsc(studyPeriodId, schoolClassId.get()));
+            model.addAttribute("absencesDTO", absenceRepository.findByStudyPeriodIdAndSchoolClassIdWithStudentNamesOrderByIdAsc(studyPeriod.getId(), schoolClassId.get()));
 
 //            model.addAttribute("studyPeriodId", studyPeriodId);
             model.addAttribute("selectedTeacher", teacherRepository.findById(teacherId.get()).orElse(null));

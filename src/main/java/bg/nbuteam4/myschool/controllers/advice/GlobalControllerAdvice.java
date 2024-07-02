@@ -1,4 +1,4 @@
-package bg.nbuteam4.myschool.controllers;
+package bg.nbuteam4.myschool.controllers.advice;
 
 import bg.nbuteam4.myschool.repository.SchoolRepository;
 import bg.nbuteam4.myschool.repository.StudyPeriodRepository;

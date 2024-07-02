@@ -9,6 +9,7 @@ import bg.nbuteam4.myschool.repository.SchoolRepository;
 import bg.nbuteam4.myschool.repository.StudyPeriodRepository;
 import jakarta.servlet.http.HttpSession;
 import jakarta.validation.Valid;
+import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
@@ -36,9 +37,9 @@ public class DashboardController {
     String index(
             Model model,
             HttpSession session,
-            GlobalFiltersRequest globalFiltersRequest
+            GlobalFiltersRequest globalFiltersRequest,
+            Authentication authentication
     ) {
-
         Long selectedSchoolId = (Long) session.getAttribute("schoolId");
 
         if (selectedSchoolId != null) {

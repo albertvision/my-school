@@ -7,6 +7,10 @@
         <div class="page-header">
             <h1>Табло</h1>
         </div>
+        <p th:if="${result} != null"
+           th:class="'alert alert-' + ${result.type().getUiClass()}"
+           th:text="${result.message()}"/>
+
         <form th:action="@{/set-global-filters}" method="post">
             <div class="form-group">
                 <label for="schoolId">Избери училище</label>

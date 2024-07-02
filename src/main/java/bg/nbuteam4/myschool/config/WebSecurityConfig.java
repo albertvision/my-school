@@ -1,9 +1,12 @@
 package bg.nbuteam4.myschool.config;
 
-import bg.nbuteam4.myschool.enums.Role;
 import bg.nbuteam4.myschool.entity.User;
+import bg.nbuteam4.myschool.enums.Role;
+import bg.nbuteam4.myschool.repository.SchoolRepository;
+import bg.nbuteam4.myschool.repository.StudyPeriodRepository;
 import bg.nbuteam4.myschool.repository.UserDetailsManager;
 import bg.nbuteam4.myschool.repository.UserRepository;
+import bg.nbuteam4.myschool.resolver.GlobalFiltersResolver;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Primary;
@@ -17,14 +20,25 @@ import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.DelegatingPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.web.method.support.HandlerMethodArgumentResolver;
+import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 
 import java.util.Arrays;
 import java.util.HashMap;
+import java.util.List;
 
 @Configuration
 @EnableWebSecurity
 @EnableMethodSecurity
-public class WebSecurityConfig {
+public class WebSecurityConfig implements WebMvcConfigurer {
+    private final SchoolRepository schoolRepository;
+    private final StudyPeriodRepository studyPeriodRepository;
+
+    public WebSecurityConfig(SchoolRepository schoolRepository, StudyPeriodRepository studyPeriodRepository) {
+        this.schoolRepository = schoolRepository;
+        this.studyPeriodRepository = studyPeriodRepository;
+    }
+
     @Bean
     public AuthenticationManager authenticationManager(
             UserDetailsService userDetailsService,
@@ -76,4 +90,8 @@ public class WebSecurityConfig {
         return new DelegatingPasswordEncoder(defaultEncoderId, encoders);
     }
 
+    @Override
+    public void addArgumentResolvers(List<HandlerMethodArgumentResolver> resolvers) {
+        resolvers.add(new GlobalFiltersResolver(schoolRepository, studyPeriodRepository));
+    }
 }

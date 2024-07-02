@@ -5,9 +5,9 @@ import bg.nbuteam4.myschool.dto.StudentSaveRequest;
 import bg.nbuteam4.myschool.entity.School;
 import bg.nbuteam4.myschool.entity.Student;
 import bg.nbuteam4.myschool.enums.ActionResultType;
-import bg.nbuteam4.myschool.exception.InvalidGlobalFilterException;
 import bg.nbuteam4.myschool.repository.SchoolRepository;
 import bg.nbuteam4.myschool.repository.StudentRepository;
+import bg.nbuteam4.myschool.validation.GlobalFilter;
 import jakarta.servlet.http.HttpSession;
 import jakarta.validation.Valid;
 import org.hibernate.exception.ConstraintViolationException;
@@ -46,11 +46,11 @@ public class StudentController {
     }
 
     @GetMapping
-    String index(Model model) {
-        long schoolId = (long) httpSession.getAttribute("schoolId");
-
-        School school = schoolRepository.findById(schoolId).orElse(null);
-        List<Student> students = studentRepository.findBySchoolId(schoolId);
+    String index(
+            Model model,
+            @GlobalFilter("school") School school
+    ) {
+        List<Student> students = studentRepository.findBySchoolId(school.getId());
 
         model.addAttribute("students", students);
         model.addAttribute("title", "Ученици");
@@ -62,9 +62,8 @@ public class StudentController {
     String edit(
             Model model,
             @PathVariable("id") Long id,
-            @SessionAttribute("schoolId") Long schoolId
+            @GlobalFilter("school") School school
     ) {
-        School school = schoolRepository.findById(schoolId).orElseThrow(() -> new ResponseStatusException(NOT_FOUND));
         Student student = studentRepository.findByIdAndSchool(id, school).orElseThrow(() -> new ResponseStatusException(NOT_FOUND));
 
         StudentSaveRequest request = Optional.ofNullable((StudentSaveRequest) model.getAttribute("request"))
@@ -79,14 +78,11 @@ public class StudentController {
     // -------------------
     @PostMapping("/save")
     String doSave(
-            @SessionAttribute("schoolId") Optional<Long> schoolId,
+            @GlobalFilter("school") School school,
             @Valid @ModelAttribute StudentSaveRequest saveRequest,
             BindingResult result,
             RedirectAttributes attributes
     ) {
-        School school = schoolRepository.findById(schoolId.orElse(0L))
-                .orElseThrow(() -> new InvalidGlobalFilterException("Моля, изберете валидно училище преди да продължите."));
-
         Student student = Optional.ofNullable(saveRequest.getId())
                 .flatMap(it -> studentRepository.findByIdAndSchool(it, school))
                 .orElseGet(Student::new);

@@ -4,13 +4,13 @@ import bg.nbuteam4.myschool.dto.ActionResult;
 import bg.nbuteam4.myschool.dto.SchoolClassCreateRequest;
 import bg.nbuteam4.myschool.entity.School;
 import bg.nbuteam4.myschool.entity.SchoolClass;
+import bg.nbuteam4.myschool.entity.StudyPeriod;
 import bg.nbuteam4.myschool.enums.ActionResultType;
 import bg.nbuteam4.myschool.repository.MarkRepository;
 import bg.nbuteam4.myschool.repository.SchoolClassRepository;
 import bg.nbuteam4.myschool.repository.SchoolRepository;
-import jakarta.servlet.http.HttpSession;
+import bg.nbuteam4.myschool.validation.GlobalFilter;
 import jakarta.validation.Valid;
-import org.springframework.boot.autoconfigure.session.SessionProperties;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -30,18 +30,12 @@ public class SchoolClassController {
 
     private final SchoolClassRepository schoolClassRepository;
     private final SchoolRepository schoolRepository;
-    private final SessionProperties sessionProperties;
-    private final HttpSession httpSession;
-    private final DashboardController dashboardController;
     private final MarkRepository markRepository;
 
 
-    public SchoolClassController(SchoolClassRepository schoolClassRepository, SchoolRepository schoolRepository, SessionProperties sessionProperties, HttpSession httpSession, DashboardController dashboardController, MarkRepository markRepository) {
+    public SchoolClassController(SchoolClassRepository schoolClassRepository, SchoolRepository schoolRepository, MarkRepository markRepository) {
         this.schoolClassRepository = schoolClassRepository;
         this.schoolRepository = schoolRepository;
-        this.sessionProperties = sessionProperties;
-        this.httpSession = httpSession;
-        this.dashboardController = dashboardController;
         this.markRepository = markRepository;
     }
 
@@ -49,18 +43,16 @@ public class SchoolClassController {
     @GetMapping
     public String index(
             Model model,
-            @SessionAttribute(value = "studyPeriodId", required = false) Optional<Long> studyPeriodId
+            @GlobalFilter(value = "school") School school,
+            @GlobalFilter(value = "studyPeriod", required = false) StudyPeriod studyPeriod
     ) {
-        long schoolId = (long) httpSession.getAttribute("schoolId");
-
-        School school = schoolRepository.findById(schoolId).orElse(null);
-        List<SchoolClass> schoolschoolClass = schoolClassRepository.findBySchoolId(schoolId)
+        List<SchoolClass> schoolschoolClass = schoolClassRepository.findBySchoolId(school.getId())
                 .stream()
                 .sorted()
                 .toList();
 
-        Map<Long, String> averageSchoolClassMarks = studyPeriodId
-                .map(markRepository::findAverageSchoolClassMarksBySchoolPeriodId)
+        Map<Long, String> averageSchoolClassMarks = Optional.ofNullable(studyPeriod)
+                .map(it -> markRepository.findAverageSchoolClassMarksBySchoolPeriodId(it.getId()))
                 .orElseGet(markRepository::findAverageSchoolClassMarks)
                 .stream()
                 .collect(Collectors.toMap(

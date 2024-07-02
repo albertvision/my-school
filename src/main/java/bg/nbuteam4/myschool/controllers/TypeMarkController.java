@@ -1,12 +1,13 @@
 package bg.nbuteam4.myschool.controllers;
 
 import bg.nbuteam4.myschool.dto.ActionResult;
-import bg.nbuteam4.myschool.enums.ActionResultType;
 import bg.nbuteam4.myschool.dto.TypeMarkCreateRequest;
 import bg.nbuteam4.myschool.entity.School;
 import bg.nbuteam4.myschool.entity.TypeMark;
+import bg.nbuteam4.myschool.enums.ActionResultType;
 import bg.nbuteam4.myschool.repository.SchoolRepository;
 import bg.nbuteam4.myschool.repository.TypeMarkRepository;
+import bg.nbuteam4.myschool.validation.GlobalFilter;
 import jakarta.servlet.http.HttpSession;
 import jakarta.validation.Valid;
 import org.springframework.dao.DataIntegrityViolationException;
@@ -37,13 +38,13 @@ public class TypeMarkController {
 
 
     @GetMapping
-    public String index(Model model) {
+    public String index(
+            Model model,
+            @GlobalFilter("school") School school
+    ) {
         model.addAttribute("title", "Типове оценки");
 
-        long schoolId = (long) httpSession.getAttribute("schoolId");
-
-        School school = schoolRepository.findById(schoolId).orElse(null);
-        List<TypeMark> typeMarksClass = typeMarkRepository.findBySchoolIdOrderByIdAsc(schoolId);
+        List<TypeMark> typeMarksClass = typeMarkRepository.findBySchoolIdOrderByIdAsc(school.getId());
 
         model.addAttribute("school", school);
         model.addAttribute("typeMarks", typeMarksClass);
@@ -62,8 +63,8 @@ public class TypeMarkController {
 
     @PostMapping("/create")
     public String createTypeMark(@Valid @ModelAttribute TypeMarkCreateRequest requestTypeMark,
-                                BindingResult result,
-                                RedirectAttributes redirectAttributes) {
+                                 BindingResult result,
+                                 RedirectAttributes redirectAttributes) {
         if (result.hasErrors()) {
             redirectAttributes.addFlashAttribute("result", new ActionResult("Има невалидно попълнени полета.", ActionResultType.ERROR));
             redirectAttributes.addFlashAttribute("errors", result);

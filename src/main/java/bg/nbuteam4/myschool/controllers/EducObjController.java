@@ -7,7 +7,7 @@ import bg.nbuteam4.myschool.entity.School;
 import bg.nbuteam4.myschool.enums.ActionResultType;
 import bg.nbuteam4.myschool.repository.EducObjRepository;
 import bg.nbuteam4.myschool.repository.SchoolRepository;
-import jakarta.servlet.http.HttpSession;
+import bg.nbuteam4.myschool.validation.GlobalFilter;
 import jakarta.validation.Valid;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.stereotype.Controller;
@@ -25,25 +25,21 @@ public class EducObjController {
 
     private final EducObjRepository educObjRepository;
     private final SchoolRepository schoolRepository;
-    private final HttpSession session;
 
-
-    public EducObjController(EducObjRepository educObjRepository, SchoolRepository schoolRepository, HttpSession session) {
+    public EducObjController(EducObjRepository educObjRepository, SchoolRepository schoolRepository) {
         this.educObjRepository = educObjRepository;
         this.schoolRepository = schoolRepository;
-        this.session = session;
     }
 
 
     @GetMapping
-    public String index(Model model) {
+    public String index(
+            Model model,
+            @GlobalFilter("school") School school
+    ) {
         model.addAttribute("title", "Преподавани предмети");
 
-
-        long schoolId = (long) session.getAttribute("schoolId");
-
-        School school = schoolRepository.findById(schoolId).orElse(null);
-        List<EducObj> schoolEducObjs = educObjRepository.findBySchoolId(schoolId);
+        List<EducObj> schoolEducObjs = educObjRepository.findBySchoolId(school.getId());
 
         model.addAttribute("school", school);
         model.addAttribute("educObjs", schoolEducObjs);
@@ -51,6 +47,7 @@ public class EducObjController {
 
         return "educObjects/index";
     }
+
     @PostMapping("/{id}/update")
     public String update(@PathVariable Long id, @RequestParam String name) {
         EducObj educObj = educObjRepository.findById(id).orElse(null);
@@ -84,7 +81,6 @@ public class EducObjController {
 
 
     @PostMapping("/{id}/delete")
-
     RedirectView index(RedirectAttributes attributes, @PathVariable("id") Long id) {
 
         try {
