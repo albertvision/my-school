@@ -3,7 +3,6 @@ package bg.nbuteam4.myschool.entity;
 import bg.nbuteam4.myschool.enums.AbsenceStatus;
 import bg.nbuteam4.myschool.enums.AbsenceType;
 import jakarta.persistence.*;
-import org.springframework.format.annotation.DateTimeFormat;
 
 import java.time.LocalDate;
 
@@ -35,20 +34,18 @@ public class Absence {
     @ManyToOne
     @JoinColumn(name = "educ_obj_id", nullable = false)
     private EducObj educObj;
+
     @Column(name = "absence_type", nullable = false)
     @Enumerated(EnumType.STRING)
     private AbsenceType absenceType;
-    /*
-    1 болест
-    2 домашни причини
-    3 закъснение
-    9 отсъствие
-    */
+
+
     @ManyToOne
     @JoinColumn(nullable = false)
     private Teacher teacher;
 
     private String notes;
+
     @Enumerated(EnumType.STRING)
     private AbsenceStatus status;
     /*

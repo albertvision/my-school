@@ -14,35 +14,31 @@
             <p th:if="${result} != null"
                th:class="'alert alert-' + ${result.type().getUiClass()}"
                th:text="${result.message()}"/>
-
-            <br th:if="${school == null}">
-            <!-- Display selected school name -->
-            <div class="container mt-3" th:if="${school != null}">
-                <h2 class="font-weight-bold" th:text="${school.name}"></h2>
-            </div>
-
-            <form th:action="@{/absences}">
-                <div class="form-group">
-                    <label for="teacherId">Избери учител</label>
-                    <select id="teacherId" name="teacherId" class="form-control" required>
-                        <option value="">Избери...</option>
-                        <option th:each="teacher : ${teachers}" th:value="${teacher.id}"
-                                th:selected="${selectedTeacher != null and selectedTeacher.id == teacher.id}"
-                                th:text="${teacher.name}"></option>
-                    </select>
-                </div>
-                <div class="form-group">
-                    <label for="schoolClassId">Избери клас</label>
-                    <select id="schoolClassId" name="schoolClassId" class="form-control" required>
-                        <option value="">Избери...</option>
-                        <option th:each="schoolClass : ${schoolClasses}" th:value="${schoolClass.id}"
-                                th:selected="${selectedSchoolClass != null and selectedSchoolClass.id == schoolClass.id}"
-                                th:text="${schoolClass.school.name + ' - ' + schoolClass.name}"></option>
-                    </select>
-                </div>
-                <button type="submit" class="btn btn-primary">Избери</button>
-            </form>
         </div>
+
+        <form th:action="@{/absences}">
+            <div class="form-group">
+                <label for="teacherId">Избери учител</label>
+                <select id="teacherId" name="teacherId" class="form-control" required>
+                    <option value="">Избери...</option>
+                    <option th:each="teacher : ${teachers}" th:value="${teacher.id}"
+                            th:selected="${selectedTeacher != null and selectedTeacher.id == teacher.id}"
+                            th:text="${teacher.name}"></option>
+                </select>
+            </div>
+            <div class="form-group">
+                <label for="schoolClassId">Избери клас</label>
+                <select id="schoolClassId" name="schoolClassId" class="form-control" required>
+                    <option value="">Избери...</option>
+                    <option th:each="schoolClass : ${schoolClasses}" th:value="${schoolClass.id}"
+                            th:selected="${selectedSchoolClass != null and selectedSchoolClass.id == schoolClass.id}"
+                            th:text="${schoolClass.school.name + ' - ' + schoolClass.name}"></option>
+                </select>
+            </div>
+            <button type="submit" class="btn btn-primary">Избери</button>
+        </form>
+
+        hr
 
         <!-- Table displaying absences objects -->
         <div class="panel panel-default" th:if="${teacherId != null and schoolClassId != null}">
@@ -70,7 +66,7 @@
                         <td th:id="'absenceDate-'+${absence.id}" th:text="${absence.absenceDate}"></td>
                         <td th:id="'educObj.name-'+${absence.id}" th:text="${absence.educObj.name}"></td>
                         <td th:id="'absenceType-'+${absence.id}" th:text="${absence.absenceType.getLabel()}"></td>
-                        <td th:id="'status-'+${absence.id}" th:text="${absence.status}"></td>
+                        <td th:id="'status-'+${absence.id}" th:text="${absence.status.label}"></td>
                         <td th:id="'notes-'+${absence.id}" th:text="${absence.notes}"></td>
                         <td width="10">
                             <a th:id="'edit-btn-'+${absence.id}" href="javascript:void(0);"
@@ -163,7 +159,7 @@
                                 <select id="status" name="status" form="new-form-create" class="form-control" required>
                                     <option th:each="status : ${statuses}"
                                             th:value="${status.name()}"
-                                            th:text="${status.name()}"></option>
+                                            th:text="${status.label}"></option>
                                 </select>
                             </label>
                         </td>
