@@ -1,10 +1,10 @@
 package bg.nbuteam4.myschool.dto;
 
-import jakarta.validation.constraints.NotNull;
+import jakarta.validation.constraints.Min;
 
 public class GlobalFiltersRequest {
 
-    @NotNull
+    @Min(1)
     private Long schoolId;
 
     private Long studyPeriodId;
