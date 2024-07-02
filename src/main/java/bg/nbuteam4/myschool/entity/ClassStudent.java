@@ -37,12 +37,27 @@ public class ClassStudent {
         return studyPeriod;
     }
 
+    public ClassStudent setStudyPeriod(StudyPeriod studyPeriod) {
+        this.studyPeriod = studyPeriod;
+        return this;
+    }
+
     public SchoolClass getSchoolClass() {
         return schoolClass;
     }
 
+    public ClassStudent setSchoolClass(SchoolClass schoolClass) {
+        this.schoolClass = schoolClass;
+        return this;
+    }
+
     public Student getStudent() {
         return student;
+    }
+
+    public ClassStudent setStudent(Student student) {
+        this.student = student;
+        return this;
     }
 
     public int getStudentNumberInClass() {
@@ -50,8 +65,9 @@ public class ClassStudent {
     }
 
 
-    public void setStudentNumberInClass(int studentNumberInClass) {
+    public ClassStudent setStudentNumberInClass(int studentNumberInClass) {
         this.studentNumberInClass = studentNumberInClass;
+        return this;
     }
 
 }

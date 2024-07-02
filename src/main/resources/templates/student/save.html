@@ -22,6 +22,7 @@
                         <div th:replace="~{form-group :: field('lastName', 'text', 'Фамилия', *{getLastName()})}"></div>
                         <div th:replace="~{form-group :: field('parentEgn', 'text', 'ЕГН родител', *{getParentEgn()})}"></div>
                         <div th:replace="~{form-group :: field('parentName', 'text', 'Имена на родител', *{getParentName()})}"></div>
+                        <div th:replace="~{form-group :: fieldSelect('schoolClassId', 'Клас', ${schoolClasses}, *{getSchoolClassId()})}"></div>
                         <div th:replace="~{form-group :: checkbox('status', 'Активен', 1, ${request.getStatus() == true})}"></div>
                         <button type="submit" class="btn btn-primary">Запиши</button>
                         <a href="/student" class="btn btn-link">Отказ</a>

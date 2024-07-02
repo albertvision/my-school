@@ -1,8 +1,11 @@
 package bg.nbuteam4.myschool.dto;
 
+import bg.nbuteam4.myschool.entity.ClassStudent;
 import bg.nbuteam4.myschool.entity.Student;
 import jakarta.validation.constraints.NotEmpty;
 import org.hibernate.validator.constraints.Length;
+
+import java.util.Optional;
 
 public class StudentSaveRequest {
     private Long id;
@@ -26,6 +29,8 @@ public class StudentSaveRequest {
 
     @NotEmpty
     private String parentName;
+
+    private Long schoolClassId;
 
     private boolean status;
 
@@ -83,6 +88,19 @@ public class StudentSaveRequest {
         return this;
     }
 
+    public Long getSchoolClassId() {
+        return schoolClassId;
+    }
+
+    public StudentSaveRequest setSchoolClassId(Long schoolClassId) {
+        this.schoolClassId = schoolClassId;
+        return this;
+    }
+
+    public boolean isStatus() {
+        return status;
+    }
+
     public boolean getStatus() {
         return status;
     }
@@ -104,8 +122,11 @@ public class StudentSaveRequest {
         return student;
     }
 
-    public static StudentSaveRequest createFromEntity(Student student) {
-        return new StudentSaveRequest()
+    public static StudentSaveRequest createFromEntity(
+            Student student,
+            Optional<ClassStudent> classStudent
+    ) {
+        StudentSaveRequest studentSaveRequest = new StudentSaveRequest()
                 .setId(student.getId())
                 .setEgn(student.getEgn())
                 .setFirstName(student.getFirstName())
@@ -114,6 +135,10 @@ public class StudentSaveRequest {
                 .setParentEgn(student.getParentEgn())
                 .setParentName(student.getParentName())
                 .setStatus(student.getStatus() == 1);
+
+        classStudent.ifPresent(it -> studentSaveRequest.setSchoolClassId(it.getSchoolClass().getId()));
+
+        return studentSaveRequest;
     }
 
     public Long getId() {

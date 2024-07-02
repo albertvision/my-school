@@ -2,11 +2,28 @@
 <html lang="bg" xmlns:th="http://www.thymeleaf.org">
 <div th:fragment="field(id, type, label, value)"
 >
-    <div th:replace="~{:: baseWithLabel(${id}, ${label}, ~{::.form-control})}">
-        <input th:type="${type}" th:name="${id}" th:id="${id}" th:value="${value}" class="form-control"/>
+    <div th:replace="~{:: baseWithLabel(${id}, ${label}, ~{::.form-control-input})}">
+        <input th:type="${type}" th:name="${id}" th:id="${id}" th:value="${value}"
+               class="form-control form-control-input"/>
     </div>
 
 </div>
+
+<div th:fragment="fieldSelect(id, label, options, selectedKey)">
+    <div th:replace="~{:: baseWithLabel(${id}, ${label}, ~{::.form-control-select})}">
+        <select th:name="${id}" th:id="${id}" class="form-control form-control-select">
+            <option value="">Избери...</option>
+            <option
+                    th:each="option : ${options}"
+                    th:value="${option.key}"
+                    th:text="${option.value}"
+                    th:selected="${option.key.equals(selectedKey)}"
+            >
+            </option>
+        </select>
+    </div>
+</div>
+
 <div th:fragment="checkbox(id, label, value, checked)" th:with="append=${append ?: ''}">
     <div class="checkbox">
         <label>
