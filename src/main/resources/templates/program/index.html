@@ -8,28 +8,23 @@
            th:class="'alert alert-' + ${result.type().getUiClass()}"
            th:text="${result.message()}"/>
 
-        <!-- Form to select StudyPeriod and SchoolClass -->
-        <form th:action="@{/program}">
-            <div class="form-group">
-                <label for="schoolClassId">Избери клас</label>
-                <select id="schoolClassId" name="schoolClassId" class="form-control" required>
-                    <option value="">Избери...</option>
-                    <option th:each="schoolClassOption : ${schoolClasses}"
-                            th:value="${schoolClassOption.id}"
-                            th:text="${schoolClassOption.name}"
-                            th:selected="${schoolClass != null && schoolClassOption.getId().equals(schoolClass.getId())}">
-                    </option>
-                </select>
-            </div>
-            <button type="submit" class="btn btn-primary">Покажи програма</button>
-        </form>
     </div>
 
-    <!-- Display selected SchoolClass and StudyPeriod names -->
-    <div class="container mt-3" th:if="${schoolClass != null and studyPeriod != null}">
-        <h2 class="font-weight-bold" th:text="${schoolClass.name + ' - ' + studyPeriod.name}"></h2>
-    </div>
-
+    <form th:action="@{/program}">
+        <div class="form-group">
+            <label for="schoolClassId">Избери клас</label>
+            <select id="schoolClassId" name="schoolClassId" class="form-control" required>
+                <option value="">Избери...</option>
+                <option th:each="schoolClassOption : ${schoolClasses}"
+                        th:value="${schoolClassOption.id}"
+                        th:text="${schoolClassOption.name}"
+                        th:selected="${schoolClass != null && schoolClassOption.getId().equals(schoolClass.getId())}">
+                </option>
+            </select>
+        </div>
+        <button type="submit" class="btn btn-primary">Покажи програма</button>
+    </form>
+    <hr>
     <div class="panel panel-default" th:if="${programCells != null}">
         <div class="table-responsive">
             <table class="table table-bordered table-hover table-striped">
