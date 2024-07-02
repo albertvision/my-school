@@ -64,7 +64,8 @@ public class AbsenceController {
         model.addAttribute("title", "Отсъствия");
 
         List<Teacher> teachers = teacherRepository.findAll();
-        List<SchoolClass> schoolClasses = schoolClassRepository.findBySchoolId(school.getId());
+        List<SchoolClass> schoolClasses = schoolClassRepository.findBySchoolId(school.getId())
+                .stream().sorted().toList();
 
         model.addAttribute("school", school);
         model.addAttribute("teachers", teachers);

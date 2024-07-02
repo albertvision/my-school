@@ -32,7 +32,7 @@
                     <option value="">Избери...</option>
                     <option th:each="schoolClass : ${schoolClasses}" th:value="${schoolClass.id}"
                             th:selected="${selectedSchoolClass != null and selectedSchoolClass.id == schoolClass.id}"
-                            th:text="${schoolClass.school.name + ' - ' + schoolClass.name}"></option>
+                            th:text="${schoolClass.name}"></option>
                 </select>
             </div>
             <button type="submit" class="btn btn-primary">Избери</button>
