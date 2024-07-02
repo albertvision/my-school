@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html th:replace="~{base :: layout(~{::body})}" xmlns:th="http://www.thymeleaf.org">
+<body>
+<div class="container">
+    <div class="page-header">
+        <h1 th:text="${title}"></h1>
+
+    </div>
+    <p th:if="${result} != null"
+       th:class="'alert alert-' + ${result.type().getUiClass()}"
+       th:text="${result.message()}"/>
+
+    <div class="panel panel-default">
+        <div class="table-responsive">
+            <table class="table table-hover table-striped">
+                <thead>
+                <tr>
+                    <th>Предмети</th>
+                    <th>Среден успех</th>
+                </tr>
+                </thead>
+                <tbody>
+                <tr th:each="averageSchoolEducObjMark: ${averageSchoolEducObjMarks}">
+                    <td th:text="${averageSchoolEducObjMark.getKey().name}"></td>
+                    <td>[[${averageSchoolEducObjMarks.get(averageSchoolEducObjMark.getKey()) ?: '-'}]]</td>
+                </tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+</body>
+</html>

@@ -54,7 +54,7 @@ public class SchoolClassController {
                 .toList();
 
         Map<Long, String> averageSchoolClassMarks = Optional.ofNullable(studyPeriod)
-                .map(it -> markRepository.findAverageSchoolClassMarksBySchoolPeriodId(it.getId()))
+                .map(it -> markRepository.findAverageSchoolClassMarksByStudyPeriodId(it.getId()))
                 .orElseGet(markRepository::findAverageSchoolClassMarks)
                 .stream()
                 .collect(Collectors.toMap(

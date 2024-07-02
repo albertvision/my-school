@@ -1,6 +1,7 @@
 package bg.nbuteam4.myschool.entity;
 
 import bg.nbuteam4.myschool.enums.MarkStatus;
+import com.fasterxml.jackson.annotation.JsonFormat;
 import jakarta.persistence.*;
 import jakarta.validation.Constraint;
 import jakarta.validation.constraints.Max;

@@ -3,6 +3,7 @@ package bg.nbuteam4.myschool.repository;
 import bg.nbuteam4.myschool.dto.MarkAndStudentNames;
 import bg.nbuteam4.myschool.dto.SchoolAverageMark;
 import bg.nbuteam4.myschool.dto.SchoolClassAverageMark;
+import bg.nbuteam4.myschool.dto.SchoolEducObjAverageMark;
 import bg.nbuteam4.myschool.entity.Mark;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.ListCrudRepository;
@@ -70,5 +71,19 @@ public interface MarkRepository extends ListCrudRepository<Mark, Long> {
             where m.studyPeriod.id=:studyPeriodId
             group by sc
             """)
-    List<SchoolClassAverageMark> findAverageSchoolClassMarksBySchoolPeriodId(@Param("studyPeriodId") Long studyPeriodId);
+    List<SchoolClassAverageMark> findAverageSchoolClassMarksByStudyPeriodId(@Param("studyPeriodId") Long studyPeriodId);
+
+    @Query("""
+            SELECT new bg.nbuteam4.myschool.dto.SchoolEducObjAverageMark(m.educObj, avg(m.value))
+            FROM School s
+            join SchoolClass sc on sc.school=s
+            join Mark m on sc=m.schoolClass
+            where m.studyPeriod.id=:studyPeriodId
+            AND s.id=:schoolId
+            group by m.educObj
+            """)
+    List<SchoolEducObjAverageMark> findAverageSchoolEducObjMarksByStudyPeriodId(@Param("schoolId") Long schoolId, @Param("studyPeriodId") Long studyPeriodId);
+
+
+
 }

@@ -46,12 +46,12 @@ public class EducObj { //this is subject in school
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
         EducObj educObj = (EducObj) o;
-        return Objects.equals(id, educObj.id) && Objects.equals(school, educObj.school);
+        return Objects.equals(id, educObj.id);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(id, school);
+        return Objects.hash(id);
     }
 }
 

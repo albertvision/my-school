@@ -1,12 +1,17 @@
 package bg.nbuteam4.myschool.controllers;
 
 import bg.nbuteam4.myschool.dto.ActionResult;
+import bg.nbuteam4.myschool.dto.SchoolEducObjAverageMark;
 import bg.nbuteam4.myschool.dto.SchoolSaveRequest;
+import bg.nbuteam4.myschool.entity.EducObj;
 import bg.nbuteam4.myschool.entity.School;
+import bg.nbuteam4.myschool.entity.StudyPeriod;
 import bg.nbuteam4.myschool.enums.ActionResultType;
+import bg.nbuteam4.myschool.repository.EducObjRepository;
 import bg.nbuteam4.myschool.repository.MarkRepository;
 import bg.nbuteam4.myschool.repository.SchoolRepository;
 import bg.nbuteam4.myschool.repository.TeacherRepository;
+import bg.nbuteam4.myschool.validation.GlobalFilter;
 import jakarta.validation.Valid;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Controller;
@@ -27,19 +32,21 @@ import static org.springframework.http.HttpStatus.NOT_FOUND;
 @Controller
 @RequestMapping("/schools")
 @PreAuthorize("hasRole('ADMIN')")
-public class SchoolsController {
+public class SchoolController {
     private final SchoolRepository schoolRepository;
     private final TeacherRepository teacherRepository;
     private final MarkRepository markRepository;
+    private final EducObjRepository educObjRepository;
 
-    public SchoolsController(
+    public SchoolController(
             SchoolRepository schoolRepository,
             TeacherRepository teacherRepository,
-            MarkRepository markRepository
+            MarkRepository markRepository, EducObjRepository educObjRepository
     ) {
         this.schoolRepository = schoolRepository;
         this.teacherRepository = teacherRepository;
         this.markRepository = markRepository;
+        this.educObjRepository = educObjRepository;
     }
 
     @GetMapping
@@ -59,6 +66,8 @@ public class SchoolsController {
 
         return "schools/index";
     }
+
+
 
 
     @GetMapping("/{id}")

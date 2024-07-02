@@ -23,7 +23,7 @@ import java.util.stream.Collectors;
 
 @Controller
 @RequestMapping("/absences")
-public class AbsencesController {
+public class AbsenceController {
 
     private final SchoolRepository schoolRepository;
     private final TeacherRepository teacherRepository;
@@ -36,11 +36,11 @@ public class AbsencesController {
     private final SchoolClassRepository schoolClassRepository;
     private final AbsenceRepository absenceRepository;
 
-    public AbsencesController(SchoolRepository schoolRepository, TeacherRepository teacherRepository, EducObjRepository educObjRepository, TeachEducRepository teachEducRepository, ClassStudentRepository classStudentRepository,
+    public AbsenceController(SchoolRepository schoolRepository, TeacherRepository teacherRepository, EducObjRepository educObjRepository, TeachEducRepository teachEducRepository, ClassStudentRepository classStudentRepository,
 //                              HttpSession httpSession,
-                              StudyPeriodRepository studyPeriodRepository,
-                              SchoolClassEducObjRepository schoolClassEducObjRepository,
-                              SchoolClassRepository schoolClassRepository, AbsenceRepository absenceRepository) {
+                             StudyPeriodRepository studyPeriodRepository,
+                             SchoolClassEducObjRepository schoolClassEducObjRepository,
+                             SchoolClassRepository schoolClassRepository, AbsenceRepository absenceRepository) {
         this.schoolRepository = schoolRepository;
         this.teacherRepository = teacherRepository;
         this.educObjRepository = educObjRepository;

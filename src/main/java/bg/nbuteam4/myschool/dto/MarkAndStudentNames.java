@@ -3,6 +3,7 @@ package bg.nbuteam4.myschool.dto;
 import bg.nbuteam4.myschool.entity.EducObj;
 import bg.nbuteam4.myschool.entity.TypeMark;
 import bg.nbuteam4.myschool.enums.MarkStatus;
+import com.fasterxml.jackson.annotation.JsonFormat;
 
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
