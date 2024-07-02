@@ -64,11 +64,10 @@ public class StudentController {
                 .map(it -> classStudentRepository.findByStudyPeriodIdAndSchoolClassId(studyPeriod.getId(), schoolClassId))
                 .orElseGet(() -> classStudentRepository.findByStudyPeriodId(studyPeriod.getId()))
                 .stream()
-                .sorted(Comparator.comparing(ClassStudent::getSchoolClass))
                 .sorted(Comparator.comparing(ClassStudent::getStudentNumberInClass))
                 .collect(Collectors.groupingBy(
                         ClassStudent::getSchoolClass,
-                        LinkedHashMap::new,
+                        TreeMap::new,
                         Collectors.toList()
                 ));
 
